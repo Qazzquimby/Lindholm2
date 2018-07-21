@@ -35,7 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Deltin.CustomGameAutomation">
-      <HintPath>Overwatch-Custom-Game-Automation-master\Deltin.CustomGameAutomation bin\Deltin.CustomGameAutomation.dll</HintPath>
+      <HintPath>D:\life itself\Unreal300%\UnrealAmplifiedBot\UnrealAmplifiedBot-master\UnrealAmplifiedBot\Overwatch-Custom-Game-Automation-master\Deltin.CustomGameAutomation bin\Deltin.CustomGameAutomation.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

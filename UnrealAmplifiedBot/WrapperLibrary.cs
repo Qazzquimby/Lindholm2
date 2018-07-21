@@ -33,9 +33,9 @@ namespace BotLibrary
         private bool blueNameSet;
         private bool redNameSet;
 
-        public CustomGameWrapper() : this(ScreenshotMethods.ScreenCopy) { }
+        public CustomGameWrapper() : this(ScreenshotMethod.ScreenCopy) { }
 
-        public CustomGameWrapper(ScreenshotMethods screenshotMethod)
+        public CustomGameWrapper(ScreenshotMethod screenshotMethod)
         {
             cg = new CustomGame(default(IntPtr), screenshotMethod);
 
@@ -479,6 +479,7 @@ namespace BotLibrary
             {
                 lastGameOver = DateTime.Now;
                 PerformGameOverArgumentFuncs(sender, args);
+                PerformGameOverFuncs();
                 gameEnded = true;
             }
             else
@@ -1106,7 +1107,7 @@ namespace BotLibrary
             {
                 cg.Interact.Move(slot, empties[0]);
             }
-            catch (IndexOutOfRangeException)
+            catch (ArgumentOutOfRangeException)
             {
                 System.Diagnostics.Debug.WriteLine("Tried to move when no empty slot. Retrying.");
                 ForcePlayerSwap(slot);
@@ -1126,39 +1127,39 @@ namespace BotLibrary
 
             public void ScrambleTeams()
             {
-                players.wrapper.bots.RemoveBotsIfAny();
-                if (players.wrapper.slots.PlayerCount > 0)
-                {
-                    players.wrapper.chat.MatchChat("Scrambling teams.");
-                    SettleBlueTeam();
-                    SettleRedTeam();
+                //todonow readd with slots taken into account
+                //if (players.wrapper.slots.PlayerCount > 0)
+                //{
+                //    players.wrapper.chat.MatchChat("Scrambling teams.");
+                //    SettleBlueTeam();
+                //    SettleRedTeam();
 
-                    ShuffleBlueTeam();
+                //    ShuffleBlueTeam();
 
-                    int total_rows = Math.Max(players.wrapper.slots.RedPlayerCount, players.wrapper.slots.BluePlayerCount);
-                    int num_swaps = (total_rows + 1) / 2;
+                //    int total_rows = Math.Max(players.wrapper.slots.RedPlayerCount, players.wrapper.slots.BluePlayerCount);
+                //    int num_swaps = (total_rows + 1) / 2;
 
-                    List<int> swappable_rows = new List<int>();
-                    for (int i = 0; i < total_rows; i++)
-                    {
-                        swappable_rows.Add(i);
-                    }
+                //    List<int> swappable_rows = new List<int>();
+                //    for (int i = 0; i < total_rows; i++)
+                //    {
+                //        swappable_rows.Add(i);
+                //    }
 
-                    List<int> rows_to_swap = new List<int>();
-                    for (int i = 0; i < num_swaps; i++)
-                    {
-                        int swappable_row_index = rnd.Next(swappable_rows.Count);
-                        int row = swappable_rows[swappable_row_index];
-                        rows_to_swap.Add(row);
-                        swappable_rows.RemoveAt(swappable_row_index);
-                    }
+                //    List<int> rows_to_swap = new List<int>();
+                //    for (int i = 0; i < num_swaps; i++)
+                //    {
+                //        int swappable_row_index = rnd.Next(swappable_rows.Count);
+                //        int row = swappable_rows[swappable_row_index];
+                //        rows_to_swap.Add(row);
+                //        swappable_rows.RemoveAt(swappable_row_index);
+                //    }
 
-                    for (int i = 0; i < rows_to_swap.Count; i++)
-                    {
-                        int row = rows_to_swap[i];
-                        players.cg.Interact.Move(row, row + 6);
-                    }
-                }
+                //    for (int i = 0; i < rows_to_swap.Count; i++)
+                //    {
+                //        int row = rows_to_swap[i];
+                //        players.cg.Interact.Move(row, row + 6);
+                //    }
+                //}
             }
 
             private void SettleBlueTeam()
@@ -1729,26 +1730,17 @@ namespace BotLibrary
             List<int> slots = wrapper.slots.BlueBotSlots;
             foreach (int slot in slots)
             {
-                //Double check! No kicking players!
-                if (cg.AI.IsAI(slot))
-                {
-                    cg.Interact.RemoveFromGame(slot);
-                }
-
+                //todolater if returns false repair state
+                cg.AI.RemoveFromGameIfAI(slot);
             }
         }
 
         public void RemoveRedBots()
         {
             List<int> slots = wrapper.slots.RedBotSlots;
-            foreach (int slot in slots)
-            {
-                //Double check! No kicking players!
-                if (cg.AI.IsAI(slot))
-                {
-                    cg.Interact.RemoveFromGame(slot);
-                }
-
+            foreach(int slot in slots) {
+                //todolater if returns false repair state
+                cg.AI.RemoveFromGameIfAI(slot);
             }
         }
 
@@ -1795,7 +1787,8 @@ namespace BotLibrary
             curr = initialMap;
             mode_i = 0; //wrong but not needed??
 
-            wrapper.match.AddGameOverFunc(SetRandomMap);
+            //todolater fixme
+            //wrapper.match.AddGameOverFunc(SetRandomMap);
 
         }
 
