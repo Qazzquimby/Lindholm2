@@ -588,7 +588,7 @@ namespace BotLibrary
     class GameLoop : WrapperComponent
     {
         public int TicksPerSecond = 10;
-        public int StandardDelay = 10;
+        public int StandardDelay = 5;
 
         public GameLoop(CustomGameWrapper wrapperInject) : base(wrapperInject) { }
 
@@ -675,8 +675,8 @@ namespace BotLibrary
             gamePhase.AddLoop(wrapper.players.UpdatePlayers, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.logger.UpdatematchLog, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.players.balancer.PerformAutoBalance, wrapper.loop.StandardDelay);
-            gamePhase.AddLoop(wrapper.players.balancer.BeginOrEndAutobalance, 150);
-            gamePhase.AddLoop(wrapper.bots.HandleBots, 150);
+            gamePhase.AddLoop(wrapper.players.balancer.BeginOrEndAutobalance, 100);
+            gamePhase.AddLoop(wrapper.bots.HandleBots, 100);
 
             //todo look at what elements need to be added.
             //This begingamephase is executed when bot is started. End setup phase is not
@@ -1102,8 +1102,16 @@ namespace BotLibrary
                 }
                 ForcePlayerSwap(slot);
             }
-
-            cg.Interact.Move(slot, empties[0]);
+            try
+            {
+                cg.Interact.Move(slot, empties[0]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                System.Diagnostics.Debug.WriteLine("Tried to move when no empty slot. Retrying.");
+                ForcePlayerSwap(slot);
+            }
+            
 
         }
 
@@ -1230,20 +1238,23 @@ namespace BotLibrary
                 {
                     bool consistentImbalance = true;
                     List<int> blueTeamSizeAdvantageHistory = new List<int>();
-                    for (int i = 0; i < TicksBeforeSoftAutobalance; i++)
+                    if(players.BluePlayerCountHistory.Count > TicksBeforeSoftAutobalance)
                     {
-                        int blueCount = players.BluePlayerCountHistory[players.BluePlayerCountHistory.Count - i - 1];
-                        int redCount = players.RedPlayerCountHistory[players.RedPlayerCountHistory.Count - i - 1];
-                        int blueSizeAdvantage = blueCount - redCount;
-                        if (Math.Abs(blueSizeAdvantage) < 2)
+                        for (int i = 0; i < TicksBeforeSoftAutobalance; i++)
                         {
-                            consistentImbalance = false;
-                            break;
+                            int blueCount = players.BluePlayerCountHistory[players.BluePlayerCountHistory.Count - i - 1];
+                            int redCount = players.RedPlayerCountHistory[players.RedPlayerCountHistory.Count - i - 1];
+                            int blueSizeAdvantage = blueCount - redCount;
+                            if (Math.Abs(blueSizeAdvantage) < 2)
+                            {
+                                consistentImbalance = false;
+                                break;
+                            }
                         }
-                    }
-                    if (consistentImbalance)
-                    {
-                        BeginAutoBalance();
+                        if (consistentImbalance)
+                        {
+                            BeginAutoBalance();
+                        }
                     }
                 }
             }
@@ -1514,76 +1525,101 @@ namespace BotLibrary
         {
             List<BotRequest> alreadyFulfilled = new List<BotRequest>();
             List<BotRequest> TempBlueBotExpectations = new List<BotRequest>(BlueBotExpectations);
-            foreach (BotRequest oldRequest in PrevBlueBotExpectations.ToList())
+
+            //is state corrupt?
+            if(PrevBlueBotExpectations.Count != wrapper.slots.BlueBotCount)
             {
-                bool fulfilled = false;
-                foreach (BotRequest newRequest in TempBlueBotExpectations)
+                RemoveBlueBots();
+                foreach (BotRequest request in TempBlueBotExpectations)
                 {
-                    if (oldRequest.Hero == newRequest.Hero && oldRequest.Difficulty == newRequest.Difficulty)
+                    BlueAddBot(request);
+                }
+            }
+            else
+            {
+                foreach (BotRequest oldRequest in PrevBlueBotExpectations.ToList())
+                {
+                    bool fulfilled = false;
+                    foreach (BotRequest newRequest in TempBlueBotExpectations)
                     {
-                        fulfilled = true;
-                        alreadyFulfilled.Add(newRequest);
-                        PrevBlueBotExpectations.Remove(oldRequest);
-                        TempBlueBotExpectations.Remove(newRequest);
+                        if (oldRequest.Hero == newRequest.Hero && oldRequest.Difficulty == newRequest.Difficulty)
+                        {
+                            fulfilled = true;
+                            alreadyFulfilled.Add(newRequest);
+                            PrevBlueBotExpectations.Remove(oldRequest);
+                            TempBlueBotExpectations.Remove(newRequest);
+                            break;
+                        }
+                    }
+                    if (!fulfilled)
+                    {
+                        RemoveBlueBots();
+                        foreach (BotRequest request in TempBlueBotExpectations)
+                        {
+                            BlueAddBot(request);
+                        }
+                        foreach (BotRequest request in alreadyFulfilled)
+                        {
+                            BlueAddBot(request);
+                        }
                         break;
                     }
                 }
-                if (!fulfilled)
+                foreach (BotRequest request in TempBlueBotExpectations)
                 {
-                    RemoveBlueBots();
-                    foreach (BotRequest request in TempBlueBotExpectations)
-                    {
-                        BlueAddBot(request);
-                    }
-                    foreach (BotRequest request in alreadyFulfilled)
-                    {
-                        BlueAddBot(request);
-                    }
-                    break;
+                    BlueAddBot(request);
                 }
-            }
-            foreach (BotRequest request in TempBlueBotExpectations)
-            {
-                BlueAddBot(request);
             }
             UpdateBlueBotSlots();
 
             alreadyFulfilled = new List<BotRequest>();
             List<BotRequest> TempRedBotExpectations = new List<BotRequest>(RedBotExpectations);
-            foreach (BotRequest oldRequest in PrevRedBotExpectations.ToList())
+
+            //is state corrupt?
+            if (PrevRedBotExpectations.Count != wrapper.slots.RedBotCount)
             {
-                bool fulfilled = false;
-                foreach (BotRequest newRequest in TempRedBotExpectations)
+                RemoveRedBots();
+                foreach (BotRequest request in TempRedBotExpectations)
                 {
-                    if (oldRequest.Hero == newRequest.Hero && oldRequest.Difficulty == newRequest.Difficulty)
+                    RedAddBot(request);
+                }
+            }
+            else
+            {
+                foreach (BotRequest oldRequest in PrevRedBotExpectations.ToList())
+                {
+                    bool fulfilled = false;
+                    foreach (BotRequest newRequest in TempRedBotExpectations)
                     {
-                        fulfilled = true;
-                        alreadyFulfilled.Add(newRequest);
-                        PrevRedBotExpectations.Remove(oldRequest);
-                        TempRedBotExpectations.Remove(newRequest);
+                        if (oldRequest.Hero == newRequest.Hero && oldRequest.Difficulty == newRequest.Difficulty)
+                        {
+                            fulfilled = true;
+                            alreadyFulfilled.Add(newRequest);
+                            PrevRedBotExpectations.Remove(oldRequest);
+                            TempRedBotExpectations.Remove(newRequest);
+                            break;
+                        }
+                    }
+                    if (!fulfilled)
+                    {
+                        RemoveRedBots();
+                        foreach (BotRequest request in TempRedBotExpectations)
+                        {
+                            RedAddBot(request);
+                        }
+                        foreach (BotRequest request in alreadyFulfilled)
+                        {
+                            RedAddBot(request);
+                        }
                         break;
                     }
                 }
-                if (!fulfilled)
+                foreach (BotRequest request in TempRedBotExpectations)
                 {
-                    RemoveRedBots();
-                    foreach (BotRequest request in TempRedBotExpectations)
-                    {
-                        RedAddBot(request);
-                    }
-                    foreach (BotRequest request in alreadyFulfilled)
-                    {
-                        RedAddBot(request);
-                    }
-                    break;
+                    RedAddBot(request);
                 }
             }
-            foreach (BotRequest request in TempRedBotExpectations)
-            {
-                RedAddBot(request);
-            }
             UpdateRedBotSlots();
-
         }
 
         private void BlueAddBot(BotRequest request)
