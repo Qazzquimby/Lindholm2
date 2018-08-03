@@ -15,9 +15,10 @@ namespace UnrealAmplifiedBot
         {
             game = new CustomGameWrapper();
 
-            game.chat.prefix = ">>";
+            game.chat.SetPrefix(">>");
             game.AddStartFunc(PrintWelcomeMessage);
 
+            game.SetPreset(1, 2);
 
             game.bots.RequestBot(WrapperBotTeam.Red, 
                 Deltin.CustomGameAutomation.AIHero.Roadhog,
