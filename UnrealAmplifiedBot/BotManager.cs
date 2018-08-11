@@ -82,9 +82,9 @@ namespace BotLibrary
 
         public void HandleBots()
         {
-            if (wrapper.maps.mode_i == 3)
+            UpdateBotSlots(); //Fixme, Shouldn't be needed frequently. A failsafe.
+            if (wrapper.maps.currMode == Gamemode.TeamDeathmatch)
             {
-                Debug.Log("TDM. No bots.");
                 RemoveBotsIfAny();
             }
             else if (wrapper.slots.PlayerCount >= maximumPlayersBeforeBotRemoval)
@@ -177,11 +177,11 @@ namespace BotLibrary
         {
             if (BlueBotExpectations.Count != PrevBlueBotExpectations.Count)
             {
-                Debug.Log(string.Format("Blue bots previously {0}, now {1}.", PrevBlueBotExpectations.Count, BlueBotExpectations));
+                Debug.Log(string.Format("Blue bots previously {0}, now {1}.", PrevBlueBotExpectations.Count, BlueBotExpectations.Count));
             }
             if (RedBotExpectations.Count != PrevRedBotExpectations.Count)
             {
-                Debug.Log(string.Format("Red bots previously {0}, now {1}.", PrevRedBotExpectations.Count, RedBotExpectations));
+                Debug.Log(string.Format("Red bots previously {0}, now {1}.", PrevRedBotExpectations.Count, RedBotExpectations.Count));
             }
 
             List<BotRequest> alreadyFulfilled = new List<BotRequest>();
@@ -190,7 +190,7 @@ namespace BotLibrary
             //is state corrupt?
             if(PrevBlueBotExpectations.Count != wrapper.slots.BlueBotCount)
             {
-                Debug.Log(string.Format("Blue bots corrupted. Count is {0}, should be {1}", wrapper.slots.BlueBotCount, PrevBlueBotExpectations));
+                Debug.Log(string.Format("Blue bots corrupted. Count is {0}, should be {1}", wrapper.slots.BlueBotCount, PrevBlueBotExpectations.Count));
                 RemoveBlueBots();
                 foreach (BotRequest request in TempBlueBotExpectations)
                 {
@@ -240,7 +240,7 @@ namespace BotLibrary
             //is state corrupt?
             if (PrevRedBotExpectations.Count != wrapper.slots.RedBotCount)
             {
-                Debug.Log(string.Format("Red bots corrupted. Count is {0}, should be {1}", wrapper.slots.RedBotCount, PrevRedBotExpectations));
+                Debug.Log(string.Format("Red bots corrupted. Count is {0}, should be {1}", wrapper.slots.RedBotCount, PrevRedBotExpectations.Count));
                 RemoveRedBots();
                 foreach (BotRequest request in TempRedBotExpectations)
                 {
@@ -294,26 +294,6 @@ namespace BotLibrary
         {
             RedAddBot(request.Hero, request.Difficulty);
         }
-
-        //private void BlueAddBot(AIHero hero, Difficulty difficulty, int numToAdd)
-        //{
-        //    wrapper.joins.LockSlots();
-        //    for (int i = 0; i < numToAdd; i++)
-        //    {
-        //        BlueAddBot(hero, difficulty);
-        //    }
-        //    wrapper.joins.UnlockSlots();
-        //}
-
-        //private void RedAddBot(AIHero hero, Difficulty difficulty, int numToAdd)
-        //{
-        //    wrapper.joins.LockSlots();
-        //    for (int i = 0; i < numToAdd; i++)
-        //    {
-        //        RedAddBot(hero, difficulty);
-        //    }
-        //    wrapper.joins.UnlockSlots();
-        //}
 
         private void BlueAddBot(AIHero hero, Difficulty difficulty)
         {

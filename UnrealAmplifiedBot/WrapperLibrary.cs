@@ -33,13 +33,15 @@ namespace BotLibrary
         private List<Action> StartFuncs = new List<Action>();
         private bool blueNameSet;
         private bool redNameSet;
+        private CustomGameBuilder builder = new CustomGameBuilder();
 
-        public CustomGameWrapper() : this(ScreenshotMethod.ScreenCopy) { }
+        public CustomGameWrapper() : this(ScreenshotMethod.BitBlt) { }
 
         public CustomGameWrapper(ScreenshotMethod screenshotMethod)
         {
-            cg = new CustomGame(default(IntPtr), screenshotMethod);
-            
+            builder.ScreenshotMethod = screenshotMethod;
+            builder.OpenChatIsDefault = true; //todolater turn on only when command listening is on.
+            cg = new CustomGame(builder);          
 
             bots = new BotManager(this);
             players = new PlayerManager(this);
@@ -60,30 +62,30 @@ namespace BotLibrary
 
         public void SetGameName(string name)
         {
-            cg.GameSettings.SetGameName(name);
+            cg.Settings.SetGameName(name);
         }
 
         public void SetBlueName(string name)
         {
             blueNameSet = true;
-            cg.GameSettings.SetTeamName(PlayerTeam.Blue, @"\ " + name);
+            cg.Settings.SetTeamName(PlayerTeam.Blue, @"\ " + name);
         }
 
         public void SetRedName(string name)
         {
             redNameSet = true;
-            cg.GameSettings.SetTeamName(PlayerTeam.Red, "* " + name);
+            cg.Settings.SetTeamName(PlayerTeam.Red, "* " + name);
         }
 
         public void SetPreset(int preset, int numPresets)
         {
-            cg.GameSettings.SetNumPresets(numPresets);
+            //cg.Settings.SetNumPresets(numPresets); //fixme readd if deltin doesn't mind
             SetPreset(preset);
         }
 
         public void SetPreset(int preset)
         {
-            cg.GameSettings.LoadPreset(preset);
+            cg.Settings.LoadPreset(preset);
         }
 
 

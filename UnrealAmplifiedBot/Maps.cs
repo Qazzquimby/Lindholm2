@@ -42,6 +42,10 @@ namespace BotLibrary
 
             wrapper.match.AddGameOverFunc(SetRandomMap);
 
+            modes = new Map[][]{
+                AE_maps, A_maps, C_maps, TDM_maps, E_maps
+                };
+
         }
 
         public void SetInitialMap(Map map)
@@ -133,7 +137,7 @@ namespace BotLibrary
             Map.E_Route66,
             Map.E_Gibraltar
         };
-
+        
         public void SetRandomMap()
         {
             System.Diagnostics.Debug.WriteLine("Setting map");
@@ -145,18 +149,18 @@ namespace BotLibrary
 
             while (recent_maps.Contains(map))
             {
-                System.Diagnostics.Debug.WriteLine(String.Format("Recently went to {0}. Rerolling.", CustomGame.CG_Maps.MapNameFromID(map)));
+                System.Diagnostics.Debug.WriteLine(String.Format("Recently went to {0}. Rerolling.", Map.MapNameFromID(map)));
                 map = GetRandomMap();
             }
 
-            System.Diagnostics.Debug.WriteLine(String.Format("New Map is {0}.", CustomGame.CG_Maps.MapNameFromID(map)));
+            System.Diagnostics.Debug.WriteLine(String.Format("New Map is {0}.", Map.MapNameFromID(map)));
 
             SetMap(map);
         }
 
         public void SetMap(Map map)
         {
-            cg.Maps.ToggleMap(ToggleAction.DisableAll, map);
+            cg.ToggleMap(ToggleAction.DisableAll, map);
             if (recent_maps.Count >= 5)
             {
                 recent_maps.RemoveAt(0);
@@ -174,8 +178,9 @@ namespace BotLibrary
         public void NextMap()
         {
             //todo set MatchManger match duration to 0 on new match
-            Debug.Log("Advancing to next map");
+            Debug.Log("Restarting game");
             cg.RestartGame();
+            Debug.Log("Entering setup phase");
             wrapper.phases.EnterPhase(wrapper.phases.SetUpPhaseConstructor());
         }
 

@@ -8,7 +8,7 @@ namespace BotLibrary
     {
         private Join DesiredJoin = Join.Everyone;
         private Join CurrentJoin;
-        private int LockLevel = 0;
+        //private int LockLevel = 0;
 
         public JoinManager(CustomGameWrapper wrapper) : base(wrapper) { }
 
@@ -22,7 +22,7 @@ namespace BotLibrary
             DesiredJoin = join;
             if (CurrentJoin != DesiredJoin)
             {
-                cg.GameSettings.SetJoinSetting(DesiredJoin);
+                cg.Settings.SetJoinSetting(DesiredJoin);
                 CurrentJoin = join;
             }
         }

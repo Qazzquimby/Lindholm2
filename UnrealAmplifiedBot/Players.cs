@@ -164,12 +164,27 @@ namespace BotLibrary
 
         public void UpdatePlayers()
         {
+            List<int> RedOldSlots;
+            List<int> BlueOldSlots;
+
             List<int> RedNewSlots = GetNewRedPlayerSlots();
             List<int> BlueNewSlots = GetNewBluePlayerSlots();
 
-            List<int> RedOldSlots = wrapper.slots.RedPlayerSlots;
-            List<int> BlueOldSlots = wrapper.slots.BluePlayerSlots;
-
+            try
+            {
+                RedNewSlots = RedNewSlots.Intersect(wrapper.players.RedPlayerSlotHistory[wrapper.players.RedPlayerSlotHistory.Count - 1]).ToList();
+                BlueNewSlots = BlueNewSlots.Intersect(wrapper.players.BluePlayerSlotHistory[wrapper.players.BluePlayerSlotHistory.Count - 1]).ToList();
+                
+                RedOldSlots = wrapper.players.RedPlayerSlotHistory[wrapper.players.RedPlayerSlotHistory.Count - 2];
+                BlueOldSlots = wrapper.players.BluePlayerSlotHistory[wrapper.players.BluePlayerSlotHistory.Count - 2];
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                RedOldSlots = new List<int>();
+                BlueOldSlots = new List<int>();
+            }
+            
+            
             RedJoinSlots = RedNewSlots.Except(RedOldSlots).ToList();
             foreach (int slot in RedJoinSlots)
             {
@@ -232,41 +247,45 @@ namespace BotLibrary
 
         private void HandleJoinsAndLeaves()
         {
-            if(RedPlayerCountHistory.Count > 5) //Buffer to avoid swaps when starting up
+            if (!wrapper.match.gameEnded)
             {
-                if (wrapper.slots.BlueHasMorePlayers)
+                if (RedPlayerCountHistory.Count > 10) //Buffer to avoid swaps when starting up
                 {
-                    foreach (int joinSlot in BlueJoinSlots)
+                    if (wrapper.slots.BlueHasMorePlayers)
                     {
-                        if (wrapper.slots.BluePlayerCount >= wrapper.slots.RedPlayerCount + 2)
+                        foreach (int joinSlot in BlueJoinSlots)
                         {
-                            Debug.Log(string.Format("Blue much larger. Swapping new join from slot {0}", joinSlot));
-                            ForcePlayerSwap(joinSlot);
-                        }
-                        else if (wrapper.slots.BluePlayerCount == wrapper.slots.RedPlayerCount + 1
-                          && BlueSizeOverTime > RedSizeOverTime)
-                        {
-                            Debug.Log(string.Format("Blue larger longer. Swapping new join from slot {0}", joinSlot));
-                            ForcePlayerSwap(joinSlot);
+                            if (wrapper.slots.BluePlayerCount >= wrapper.slots.RedPlayerCount + 2)
+                            {
+                                Debug.Log(string.Format("Blue much larger. Swapping new join from slot {0}", joinSlot));
+                                ForcePlayerSwap(joinSlot);
+                            }
+                            else if (wrapper.slots.BluePlayerCount == wrapper.slots.RedPlayerCount + 1
+                              && BlueSizeOverTime > RedSizeOverTime)
+                            {
+                                Debug.Log(string.Format("Blue larger longer. Swapping new join from slot {0}", joinSlot));
+                                ForcePlayerSwap(joinSlot);
+                            }
                         }
                     }
-                }
-                else if (wrapper.slots.RedHasMorePlayers)
-                {
-                    foreach (int joinSlot in RedJoinSlots)
+                    else if (wrapper.slots.RedHasMorePlayers)
                     {
-                        if (wrapper.slots.RedPlayerCount >= wrapper.slots.BluePlayerCount + 2)
+                        foreach (int joinSlot in RedJoinSlots)
                         {
-                            Debug.Log(string.Format("Red much larger. Swapping new join from slot {0}", joinSlot));
-                            ForcePlayerSwap(joinSlot);
-                        }
-                        else if (wrapper.slots.RedPlayerCount == wrapper.slots.BluePlayerCount + 1
-                          && RedSizeOverTime > BlueSizeOverTime)
-                        {
-                            Debug.Log(string.Format("Red larger longer. Swapping new join from slot {0}", joinSlot));
-                            ForcePlayerSwap(joinSlot);
+                            if (wrapper.slots.RedPlayerCount >= wrapper.slots.BluePlayerCount + 2)
+                            {
+                                Debug.Log(string.Format("Red much larger. Swapping new join from slot {0}", joinSlot));
+                                ForcePlayerSwap(joinSlot);
+                            }
+                            else if (wrapper.slots.RedPlayerCount == wrapper.slots.BluePlayerCount + 1
+                              && RedSizeOverTime > BlueSizeOverTime)
+                            {
+                                Debug.Log(string.Format("Red larger longer. Swapping new join from slot {0}", joinSlot));
+                                ForcePlayerSwap(joinSlot);
+                            }
                         }
                     }
+
                 }
 
             }
@@ -494,6 +513,7 @@ namespace BotLibrary
 
             public void SwapToBalance()
             {
+                players.UpdatePlayers();
                 int blueSizeAdvantage = players.GetBlueSizeAdvantage();
                 if (Math.Abs(blueSizeAdvantage) >= 2)
                 {

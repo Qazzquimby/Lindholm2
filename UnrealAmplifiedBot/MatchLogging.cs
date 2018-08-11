@@ -19,7 +19,7 @@ namespace BotLibrary
             System.Diagnostics.Debug.WriteLine("Beginning log");
             currMatchLog = new MatchLog();
             currMatchLog.map = wrapper.maps.currMap;
-            currMatchLog.modeIndex = wrapper.maps.mode_i;
+            //currMatchLog.modeIndex = wrapper.maps.mode_i; //fixme add mode
         }
 
         private void LogAtGameOver(object sender, GameOverArgs args)
@@ -87,8 +87,8 @@ namespace BotLibrary
                     file.WriteLine(String.Format("Start: {0}\n", currMatchLog.startTime));
                     file.WriteLine(String.Format("End: {0}\n", currMatchLog.endTime));
                     file.WriteLine(String.Format("Winning team: {0}\n", currMatchLog.winning_team));
-                    file.WriteLine(String.Format("Map: {0}\n", CustomGame.CG_Maps.MapNameFromID(currMatchLog.map)));
-                    file.WriteLine(String.Format("Mode index: {0}\n", currMatchLog.modeIndex));
+                    file.WriteLine(String.Format("Map: {0}\n", Map.MapNameFromID(currMatchLog.map)));
+                    //file.WriteLine(String.Format("Mode index: {0}\n", currMatchLog.modeIndex)); //todosoon set to use map tag, not a number
 
                     file.WriteLine(String.Format("Joins: {0}\n", currMatchLog.joins));
                     file.WriteLine(String.Format("Leaves: {0}\n", currMatchLog.leaves));
@@ -129,7 +129,7 @@ namespace BotLibrary
         public int leaves = 0;
 
         public Map map;
-        public int modeIndex;
+        //private int LockLevel = 0;
 
         public Dictionary<Team, Dictionary<Hero, int>> hero_play_time;
         public Dictionary<Team, int> player_count;

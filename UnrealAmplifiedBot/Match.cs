@@ -22,6 +22,7 @@ namespace BotLibrary
 
         private void HandleGameOver(object sender, GameOverArgs args)
         {
+            Debug.Log("Running HandleGameOver");
             double passedSeconds = DateTime.Now.Subtract(lastGameOver).TotalSeconds;
             if (passedSeconds > 30)
             {
@@ -63,17 +64,16 @@ namespace BotLibrary
         public void PerformGameOverFuncs()
         {
             Debug.Log("Running game over funcs");
-            wrapper.match.gameEnded = false;
             foreach (Action func in gameOverFuncs)
             {
                 func();
             }
         }
 
-        private void PreventMapTimeout()
+        public void PreventMapTimeout()
         {
             int timeServerMustBeEmptyToTimeout = 100;
-            int minutesBeforeEarliestTimeout = 5;
+            int minutesBeforeEarliestTimeout = 3;
 
 
             bool consistentlyEmpty = true;
@@ -98,7 +98,7 @@ namespace BotLibrary
 
             if (consistentlyEmpty && matchDuration > (minutesBeforeEarliestTimeout * 60) * wrapper.loop.TicksPerSecond)
             {
-                cg.Chat.Chat(">>Sever is timing out soon. Moving on.");
+                wrapper.chat.MatchChat("Sever is timing out soon. Moving on.");
                 wrapper.maps.RandomAndNextMap();
             }
         }

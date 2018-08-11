@@ -6,7 +6,9 @@ namespace BotLibrary
 
     class Chat : WrapperComponent
     {
-        private Channel channel;
+        private Channel Channel;
+
+        private string Prefix = "";
 
         public Chat(CustomGameWrapper wrapperInject) : base(wrapperInject) {
 
@@ -18,28 +20,31 @@ namespace BotLibrary
 
         public void SetPrefix(string prefix)
         {
-            cg.Chat.ChatPrefix = prefix;
+            Prefix = prefix;
         }
 
-        public void EnsureMatchChat() { 
-            channel = Channel.Match;
-            cg.Chat.SwapChannel(Channel.Match);
+        public void EnsureMatchChat() {
+            SwapChannel(Channel.Match);
         }
 
         public void MatchChat(string text)
         {
-            if (channel != Channel.Match)
+            if (Channel != Channel.Match)
             {
-                channel = Channel.Match;
-                cg.Chat.SwapChannel(Channel.Match);
+                SwapChannel(Channel.Match);
             }
 
             if (text != null)
             {
-                cg.Chat.Chat(text);
+                cg.Chat.SendChatMessage(Prefix + text);
             }
         }
 
+        private void SwapChannel(Channel channel)
+        {
+            Channel = channel;
+            cg.Chat.SwapChannel(channel);
+        }
 
     }
 }

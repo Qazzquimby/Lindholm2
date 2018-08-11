@@ -18,7 +18,7 @@ namespace UnrealAmplifiedBot
             game.chat.SetPrefix(">>");
             game.AddStartFunc(PrintWelcomeMessage);
 
-            game.SetPreset(1, 2);
+            //game.SetPreset(5, 7); //fixme colors are wrong
 
             game.bots.RequestBot(WrapperBotTeam.Red, 
                 Deltin.CustomGameAutomation.AIHero.Roadhog,

@@ -12,9 +12,15 @@ namespace BotLibrary
         private Dictionary<int, List<Action>> DelayFuncs { get; set; } = new Dictionary<int, List<Action>>() { };
         private Dictionary<int, List<Action>> LoopFuncs { get; set; } = new Dictionary<int, List<Action>>() { };
         private List<Action> ExitFuncs = new List<Action>();
+        private string Name = "UNNAMED PHASE";
 
         public Phase()
         {
+        }
+
+        public Phase(string name)
+        {
+            Name = name;
         }
 
         public void AddEntry(Action func)
@@ -60,29 +66,39 @@ namespace BotLibrary
 
         public void PerformDelay()
         {
-            foreach (int delay in DelayFuncs.Keys)
+            try
             {
-                if (timer == delay)
+                foreach (int delay in DelayFuncs.Keys)
                 {
-                    List<Action> funcs = DelayFuncs[delay];
-                    PerformAllFuncs(funcs);
-                    DelayFuncs.Remove(delay);
+                    if (timer == delay)
+                    {
+                        List<Action> funcs = DelayFuncs[delay];
+                        PerformAllFuncs(funcs);
+                        DelayFuncs.Remove(delay);
+                    }
                 }
             }
+            catch (InvalidOperationException)  { } //may be the wrong exception.
         }
 
         public void PerformLoop()
         {
-            foreach (int delay in LoopFuncs.Keys)
+            try
             {
-                if (timer % delay == 0)
+
+
+                foreach (int delay in LoopFuncs.Keys)
                 {
-                    List<Action> funcs = LoopFuncs[delay];
-                    PerformAllFuncs(funcs);
+                    if (timer % delay == 0)
+                    {
+                        List<Action> funcs = LoopFuncs[delay];
+                        PerformAllFuncs(funcs);
+                    }
                 }
+                PerformDelay();
+                timer++;
             }
-            PerformDelay();
-            timer++;
+            catch (InvalidOperationException) { }
         }
 
         public void PerformExit()
@@ -137,60 +153,44 @@ namespace BotLibrary
 
         public Phase SetUpPhaseConstructor()
         {
-            Phase setUpPhase = new Phase();
+            Phase setUpPhase = new Phase("SETUP");
             setUpPhase.AddEntry(wrapper.logger.EndMatchLog);
             setUpPhase.AddEntry(wrapper.players.scrambler.ScrambleTeams);
+            setUpPhase.AddEntry(SetGameNotEnding);
 
             setUpPhase.AddLoop(wrapper.players.balancer.SwapToBalance, 25);
+            gamePhase.AddLoop(wrapper.bots.HandleBots, 50);
 
             setUpPhase.AddDelay(EndSetUpPhase, 250);
 
-            return new Phase();
+            return setUpPhase;
         }
 
         public Phase GamePhaseConstructor()
         {
-            Phase gamePhase = new Phase();
+            Phase gamePhase = new Phase("GAME");
             gamePhase.AddEntry(wrapper.chat.EnsureMatchChat);
 
             gamePhase.AddLoop(wrapper.players.UpdatePlayers, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.logger.UpdatematchLog, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.players.balancer.PerformAutoBalance, wrapper.loop.StandardDelay);
-            gamePhase.AddLoop(wrapper.players.balancer.BeginOrEndAutobalance, 100);
-            gamePhase.AddLoop(wrapper.bots.HandleBots, 100);
+            gamePhase.AddLoop(wrapper.match.PreventMapTimeout, 300);
+            gamePhase.AddLoop(wrapper.players.balancer.BeginOrEndAutobalance, 50);
+            gamePhase.AddLoop(wrapper.bots.HandleBots, 50);
+            gamePhase.AddLoop(HandleGameOver, wrapper.loop.StandardDelay);
+            gamePhase.AddLoop(HandleMissedGameOver, wrapper.loop.StandardDelay);
 
             return gamePhase;
         }
 
-        private void HandleGameOver()
-        {
-            if (wrapper.match.gameEnded)
-            {
-                EnterPhase(gameEndingPhase);
-            }
-        }
-
-        private void HandleMissedGameOver()
-        {
-            if (cg.GetGameState() == GameState.Ending_Commend)
-            {
-                Debug.Log("Missed game over");
-                wrapper.match.HandleArgumentlessGameOver();
-            }
-        }
-
-        private void EndSetUpPhase()
-        {
-            EnterPhase(gamePhase);
-        }
-
         public Phase GameEndingPhaseConstructor()
         {
-            Phase gameEndingPhase = new Phase();
+            Phase gameEndingPhase = new Phase("GAME ENDING");
             gameEndingPhase.AddEntry(wrapper.match.PerformGameOverFuncs);
             gameEndingPhase.AddEntry(SkipPostGame);
             return gameEndingPhase;
         }
+
 
         public void SkipPostGame()
         {
@@ -203,5 +203,36 @@ namespace BotLibrary
             }
             wrapper.maps.NextMap();
         }
+
+        private void SetGameNotEnding()
+        {
+            wrapper.match.gameEnded = false;
+        }
+
+        private void HandleGameOver()
+        {
+            if (wrapper.match.gameEnded)
+            {
+                Debug.Log("Entering gameEndingPhase");
+                EnterPhase(gameEndingPhase);
+            }
+        }
+
+        private void HandleMissedGameOver()
+        {
+            if (cg.GetGameState() == GameState.Ending_Commend)
+            {
+                Debug.Log("Missed game over");
+                wrapper.match.HandleArgumentlessGameOver();
+            }
+        }
+        
+        private void EndSetUpPhase()
+        {
+            Debug.Log("Entering game phase");
+            EnterPhase(gamePhase);
+        }
+
+
     }
 }
