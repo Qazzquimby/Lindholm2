@@ -12,7 +12,7 @@ namespace BotLibrary
         private Dictionary<int, List<Action>> DelayFuncs { get; set; } = new Dictionary<int, List<Action>>() { };
         private Dictionary<int, List<Action>> LoopFuncs { get; set; } = new Dictionary<int, List<Action>>() { };
         private List<Action> ExitFuncs = new List<Action>();
-        private string Name = "UNNAMED PHASE";
+        private readonly string Name = "UNNAMED PHASE";
 
         public Phase()
         {
@@ -36,8 +36,10 @@ namespace BotLibrary
             }
             catch (KeyNotFoundException)
             {
-                LoopFuncs[delay] = new List<Action>();
-                LoopFuncs[delay].Add(func);
+                LoopFuncs[delay] = new List<Action>
+                {
+                    func
+                };
             }
         }
 
@@ -54,8 +56,10 @@ namespace BotLibrary
             }
             catch (KeyNotFoundException)
             {
-                DelayFuncs[delay] = new List<Action>();
-                DelayFuncs[delay].Add(func);
+                DelayFuncs[delay] = new List<Action>
+                {
+                    func
+                };
             }
         }
 
@@ -125,7 +129,9 @@ namespace BotLibrary
 
         private Phase currPhase;
 
-        public PhaseManager(CustomGameWrapper wrapperInject) : base(wrapperInject)
+        //private int tempi=0; //fixme kill this
+
+        public PhaseManager(Lindholm wrapperInject) : base(wrapperInject)
         {
 
             gamePhase = GamePhaseConstructor();
@@ -211,6 +217,8 @@ namespace BotLibrary
 
         private void HandleGameOver()
         {
+            //cg.SaveScreenshot(string.Format(@"C:\Users\User\Documents\Visual Studio 2015\Projects\UnrealAmplifiedBot\screenshots\shot{0}.jpg",tempi));
+            //tempi++;
             if (wrapper.match.gameEnded)
             {
                 Debug.Log("Entering gameEndingPhase");

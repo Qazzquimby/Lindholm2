@@ -1,6 +1,7 @@
 ﻿using Deltin.CustomGameAutomation;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace BotLibrary
 {
@@ -15,6 +16,7 @@ namespace BotLibrary
 
     public enum WrapperBotTeam
     {
+        Either,
         Blue,
         Red
     }
@@ -25,13 +27,26 @@ namespace BotLibrary
         public AIHero Hero;
         public Difficulty Difficulty;
         public BotRule Rule;
+        public int MinPlayersOnTeam;
+        public int MaxPlayersOnTeam;
 
-        public BotRequest(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule)
+        internal BotRequest(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
         {
+            if(minPlayersOnTeam < 0 || minPlayersOnTeam > 5)
+            {
+                throw( new ArgumentOutOfRangeException("minPlayers must be in range 0 - 5 inclusive."));
+            }
+            if (maxPlayersOnTeam < 0 || minPlayersOnTeam > 5)
+            {
+                throw (new ArgumentOutOfRangeException("maxPlayers must be in range 0 - 5 inclusive."));
+            }
+
             Team = team;
             Hero = hero;
             Difficulty = difficulty;
             Rule = rule;
+            MinPlayersOnTeam = minPlayersOnTeam;
+            MaxPlayersOnTeam = maxPlayersOnTeam;
         }
     }
 
@@ -69,7 +84,7 @@ namespace BotLibrary
         private List<int> BlueBotSlots = new List<int>();
         private List<int> RedBotSlots = new List<int>();
 
-        public BotManager(CustomGameWrapper wrapperInject) : base(wrapperInject)
+        public BotManager(Lindholm wrapperInject) : base(wrapperInject)
         {
             
         }
@@ -99,10 +114,22 @@ namespace BotLibrary
             }
         }
 
-        public void RequestBot(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule)
+        public void RequestBot(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule) {
+            RequestBot(team, hero, difficulty, rule, 0, 5);
+        }
+
+        public void RequestBot(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
         {
-            BotRequest newRequest = new BotRequest(team, hero, difficulty, rule);
-            BotRequests.Add(newRequest);
+            if(team == WrapperBotTeam.Either)
+            {
+                RequestBot(WrapperBotTeam.Blue, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
+                RequestBot(WrapperBotTeam.Red, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
+            }
+            else
+            {
+                BotRequest newRequest = new BotRequest(team, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
+                BotRequests.Add(newRequest);
+            }
         }
 
         public void ClearBotRequests()

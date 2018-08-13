@@ -27,7 +27,7 @@ namespace BotLibrary
 
         //todolater use probabilities
 
-        public MapChooser(CustomGameWrapper wrapperInject, Map initialMap) : base(wrapperInject)
+        public MapChooser(Lindholm wrapperInject, Map initialMap) : base(wrapperInject)
         {
             cg.ModesEnabled = new ModesEnabled();
             cg.ModesEnabled.Assault = true;

@@ -9,7 +9,7 @@ namespace BotLibrary
         public int TicksPerSecond = 10;
         public int StandardDelay = 5;
 
-        public GameLoop(CustomGameWrapper wrapperInject) : base(wrapperInject) { }
+        public GameLoop(Lindholm wrapperInject) : base(wrapperInject) { }
 
         private Dictionary<int, List<Action>> PhaselessLoopFuncs { get; set; } = new Dictionary<int, List<Action>>() { };
 
@@ -18,7 +18,7 @@ namespace BotLibrary
             while (true)
             {
                 wrapper.phases.GetCurrPhase().PerformLoop();
-                wrapper.serverDuration++;
+                wrapper.ServerDuration++;
                 wrapper.match.matchDuration++;
                 System.Threading.Thread.Sleep(1000 / TicksPerSecond);
             }

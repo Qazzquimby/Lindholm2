@@ -10,7 +10,7 @@ namespace BotLibrary
 
         private string Prefix = "";
 
-        public Chat(CustomGameWrapper wrapperInject) : base(wrapperInject) {
+        public Chat(Lindholm wrapperInject) : base(wrapperInject) {
 
         }
 

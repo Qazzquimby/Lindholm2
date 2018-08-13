@@ -7,7 +7,7 @@ namespace BotLibrary
 
     class SlotManager : WrapperComponent
     {
-        public SlotManager(CustomGameWrapper wrapper) : base(wrapper) { }
+        public SlotManager(Lindholm wrapper) : base(wrapper) { }
 
         public List<int> BlueSlots
         {

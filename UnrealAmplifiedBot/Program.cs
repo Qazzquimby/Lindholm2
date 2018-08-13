@@ -9,52 +9,38 @@ namespace UnrealAmplifiedBot
 {
     class Program
     {
-        static CustomGameWrapper game;
+        static BotLibrary.Lindholm game;
 
         static void Main(string[] args)
         {
-            game = new CustomGameWrapper();
+            game = new BotLibrary.Lindholm();
 
             game.chat.SetPrefix(">>");
             game.AddStartFunc(PrintWelcomeMessage);
 
             //game.SetPreset(5, 7); //fixme colors are wrong
 
-            game.bots.RequestBot(WrapperBotTeam.Red, 
+            game.bots.RequestBot(WrapperBotTeam.Either,
+                Deltin.CustomGameAutomation.AIHero.McCree, //todolater separate the enums so that they can be imported without importing customgameautomation
+                Deltin.CustomGameAutomation.Difficulty.Medium,
+                BotRule.SmallerTeam,
+                0, 4);
+            game.bots.RequestBot(WrapperBotTeam.Either, 
                 Deltin.CustomGameAutomation.AIHero.Roadhog,
                 Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.SmallerTeam);
-            game.bots.RequestBot(WrapperBotTeam.Red,
-                Deltin.CustomGameAutomation.AIHero.Roadhog,
-                Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.EqualTeams);
+                BotRule.SmallerTeam,
+                0, 4);
 
-            game.bots.RequestBot(WrapperBotTeam.Red,
+            game.bots.RequestBot(WrapperBotTeam.Either,
                 Deltin.CustomGameAutomation.AIHero.McCree,
                 Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.SmallerTeam);
-            game.bots.RequestBot(WrapperBotTeam.Red,
-                Deltin.CustomGameAutomation.AIHero.McCree,
-                Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.EqualTeams);
-
-            game.bots.RequestBot(WrapperBotTeam.Blue,
+                BotRule.EqualTeams,
+                0, 3);
+            game.bots.RequestBot(WrapperBotTeam.Either,
                 Deltin.CustomGameAutomation.AIHero.Roadhog,
                 Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.SmallerTeam);
-            game.bots.RequestBot(WrapperBotTeam.Blue,
-                Deltin.CustomGameAutomation.AIHero.Roadhog,
-                Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.EqualTeams);
-
-            game.bots.RequestBot(WrapperBotTeam.Blue,
-                Deltin.CustomGameAutomation.AIHero.McCree,
-                Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.SmallerTeam);
-            game.bots.RequestBot(WrapperBotTeam.Blue,
-                Deltin.CustomGameAutomation.AIHero.McCree,
-                Deltin.CustomGameAutomation.Difficulty.Medium,
-                BotRule.EqualTeams);
+                BotRule.EqualTeams,
+                0, 3);
 
 
             game.Start();

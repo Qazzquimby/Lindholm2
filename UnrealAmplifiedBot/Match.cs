@@ -15,7 +15,7 @@ namespace BotLibrary
             = new List<System.EventHandler<Deltin.CustomGameAutomation.GameOverArgs>>();
         private List<Action> gameOverFuncs = new List<Action>();
 
-        public MatchManager(CustomGameWrapper wrapperInject) : base(wrapperInject)
+        public MatchManager(Lindholm wrapperInject) : base(wrapperInject)
         {
             cg.OnGameOver += HandleGameOver;
         }

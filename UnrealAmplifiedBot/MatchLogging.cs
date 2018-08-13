@@ -12,13 +12,15 @@ namespace BotLibrary
     {
         private MatchLog currMatchLog;
 
-        public MatchLogger(CustomGameWrapper wrapperInject) : base(wrapperInject) { }
+        public MatchLogger(Lindholm wrapperInject) : base(wrapperInject) { }
 
         public void BeginMatchLog()
         {
             System.Diagnostics.Debug.WriteLine("Beginning log");
-            currMatchLog = new MatchLog();
-            currMatchLog.map = wrapper.maps.currMap;
+            currMatchLog = new MatchLog
+            {
+                map = wrapper.maps.currMap
+            };
             //currMatchLog.modeIndex = wrapper.maps.mode_i; //fixme add mode
         }
 

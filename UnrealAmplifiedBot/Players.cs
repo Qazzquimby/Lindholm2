@@ -30,7 +30,7 @@ namespace BotLibrary
             RedSizeOverTime = 0;
         }
 
-        public PlayerManager(CustomGameWrapper wrapperInject) : base(wrapperInject)
+        public PlayerManager(Lindholm wrapperInject) : base(wrapperInject)
         {
             {
                 InitPlayerCounts();

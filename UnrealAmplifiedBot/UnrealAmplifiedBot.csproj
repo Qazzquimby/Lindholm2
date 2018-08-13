@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="BotManager.cs" />
     <Compile Include="Chat.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Debug.cs" />
     <Compile Include="Loop.cs" />
     <Compile Include="Joins.cs" />
@@ -84,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

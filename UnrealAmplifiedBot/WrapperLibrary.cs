@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace BotLibrary
 {
 
-    class CustomGameWrapper
+    class Lindholm : IDisposable
     {
         public CustomGame cg;
 
@@ -25,7 +25,7 @@ namespace BotLibrary
         public SlotManager slots;
         public JoinManager joins;
 
-        public int serverDuration
+        public int ServerDuration
         {
             get; internal set;
         } = 0;
@@ -35,9 +35,9 @@ namespace BotLibrary
         private bool redNameSet;
         private CustomGameBuilder builder = new CustomGameBuilder();
 
-        public CustomGameWrapper() : this(ScreenshotMethod.BitBlt) { }
+        public Lindholm() : this(ScreenshotMethod.BitBlt) { }
 
-        public CustomGameWrapper(ScreenshotMethod screenshotMethod)
+        public Lindholm(ScreenshotMethod screenshotMethod)
         {
             builder.ScreenshotMethod = screenshotMethod;
             builder.OpenChatIsDefault = true; //todolater turn on only when command listening is on.
@@ -124,9 +124,17 @@ namespace BotLibrary
             }
         }
 
+        /// <summary>
+        /// Disposes of custom game resources.
+        /// </summary>
+        public void Dispose()
+        {
+            cg.Dispose();
+        }
+
         private void Tick_IncrementTime()
         {
-            serverDuration++;
+            ServerDuration++;
         }
 
         private void FixNames()
@@ -147,10 +155,10 @@ namespace BotLibrary
 
     abstract class WrapperComponent
     {
-        protected CustomGameWrapper wrapper;
+        protected Lindholm wrapper;
         protected CustomGame cg;
 
-        public WrapperComponent(CustomGameWrapper wrapperInject)
+        public WrapperComponent(Lindholm wrapperInject)
         {
             wrapper = wrapperInject;
             cg = wrapper.cg;

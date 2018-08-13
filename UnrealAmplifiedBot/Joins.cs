@@ -10,7 +10,7 @@ namespace BotLibrary
         private Join CurrentJoin;
         //private int LockLevel = 0;
 
-        public JoinManager(CustomGameWrapper wrapper) : base(wrapper) { }
+        public JoinManager(Lindholm wrapper) : base(wrapper) { }
 
         public void Start()
         {
