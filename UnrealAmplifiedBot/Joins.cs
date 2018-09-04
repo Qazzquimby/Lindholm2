@@ -1,7 +1,7 @@
 ﻿using Deltin.CustomGameAutomation;
 using System;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
     class JoinManager : WrapperComponent

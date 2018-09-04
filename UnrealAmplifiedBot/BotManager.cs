@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
-namespace BotLibrary
+//todosoon make fullfillbotrequests understand min and max rules
+
+namespace Lindholm
 {
 
     public enum BotRule
@@ -14,34 +17,31 @@ namespace BotLibrary
         LargerTeam
     }
 
-    public enum WrapperBotTeam
-    {
-        Either,
-        Blue,
-        Red
-    }
-
     class BotRequest
     {
-        public WrapperBotTeam Team;
+        public Team BotTeam;
         public AIHero Hero;
         public Difficulty Difficulty;
         public BotRule Rule;
         public int MinPlayersOnTeam;
         public int MaxPlayersOnTeam;
 
-        internal BotRequest(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
+        internal BotRequest(Team team, AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
         {
-            if(minPlayersOnTeam < 0 || minPlayersOnTeam > 5)
+            if (minPlayersOnTeam < 0 || minPlayersOnTeam > 5)
             {
-                throw( new ArgumentOutOfRangeException("minPlayers must be in range 0 - 5 inclusive."));
+                throw (new ArgumentOutOfRangeException("minPlayers must be in range 0 - 5 inclusive."));
             }
-            if (maxPlayersOnTeam < 0 || minPlayersOnTeam > 5)
+            if (maxPlayersOnTeam < 0 || maxPlayersOnTeam > 5)
             {
                 throw (new ArgumentOutOfRangeException("maxPlayers must be in range 0 - 5 inclusive."));
             }
+            if (minPlayersOnTeam > maxPlayersOnTeam)
+            {
+                throw (new ArgumentOutOfRangeException("minPlayers must not be greater than maxPlayers"));
+            }
 
-            Team = team;
+            BotTeam = team;
             Hero = hero;
             Difficulty = difficulty;
             Rule = rule;
@@ -52,42 +52,43 @@ namespace BotLibrary
 
     class BotManager : WrapperComponent
     {
-        public List<int> IBlueBotSlots
-        {
-            get
-            {
-                return BlueBotSlots;
+        public BotManager(Lindholm wrapperInject) : base(wrapperInject) {
+            wrapper.slots.bots = new BotSlots(this);
+        }
+
+        public List<int> IBlueBotSlots {
+            get {
+                return BotSlots[Team.Blue];
             }
         }
 
-        public List<int> IRedBotSlots
-        {
-            get
-            {
-                return RedBotSlots;
+        public List<int> IRedBotSlots {
+            get {
+                return BotSlots[Team.Red];
             }
         }
-
-        public int maximumPlayersBeforeBotRemoval = 8;
-
-        public bool dontAddBotsToLargerTeam = true;
-        public bool addBotsToBothTeamsWhenEven = true;
 
         private List<BotRequest> BotRequests = new List<BotRequest>();
 
-        private List<BotRequest> PrevBlueBotExpectations = new List<BotRequest>();
-        private List<BotRequest> PrevRedBotExpectations = new List<BotRequest>();
+        private Dictionary<Team, List<BotRequest>> PrevBotExpectations = new Dictionary<Team, List<BotRequest>>()
+            {
+                { Team.Blue, new List<BotRequest>() },
+                { Team.Red, new List<BotRequest>() },
+            };
 
-        private List<BotRequest> BlueBotExpectations = new List<BotRequest>();
-        private List<BotRequest> RedBotExpectations = new List<BotRequest>();
+        private Dictionary<Team, List<BotRequest>> BotExpectations = new Dictionary<Team, List<BotRequest>>()
+            {
+                { Team.Blue, new List<BotRequest>() },
+                { Team.Red, new List<BotRequest>() },
+            };
 
-        private List<int> BlueBotSlots = new List<int>();
-        private List<int> RedBotSlots = new List<int>();
+        private Dictionary<Team, List<int>> BotSlots = new Dictionary<Team, List<int>>()
+            {
+                { Team.Blue, new List<int>() },
+                { Team.Red, new List<int>() },
+            };
 
-        public BotManager(Lindholm wrapperInject) : base(wrapperInject)
-        {
-            
-        }
+        
 
         public void Start()
         {
@@ -97,39 +98,41 @@ namespace BotLibrary
 
         public void HandleBots()
         {
-            UpdateBotSlots(); //Fixme, Shouldn't be needed frequently. A failsafe.
-            if (wrapper.maps.currMode == Gamemode.TeamDeathmatch)
+            if (wrapper.maps.IsDMOrTDM)
             {
-                RemoveBotsIfAny();
-            }
-            else if (wrapper.slots.PlayerCount >= maximumPlayersBeforeBotRemoval)
-            {
-                Debug.Log(string.Format("{0} players >= {1} maximum. Removing bots.", wrapper.slots.PlayerCount, maximumPlayersBeforeBotRemoval));
                 RemoveBotsIfAny();
             }
             else
             {
+                UpdateBotSlots(); //Fixme, Shouldn't be needed frequently. A failsafe.
                 UpdateBotExpectations();
                 FulfillBotExpectations();
             }
         }
 
-        public void RequestBot(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule) {
+        public void RequestBot(AIHero hero, Difficulty difficulty, BotRule rule)
+        {
+            RequestBot(Team.Blue, hero, difficulty, rule);
+            RequestBot(Team.Red, hero, difficulty, rule);
+        }
+
+        public void RequestBot(Team team, AIHero hero, Difficulty difficulty, BotRule rule)
+        {
             RequestBot(team, hero, difficulty, rule, 0, 5);
         }
 
-        public void RequestBot(WrapperBotTeam team, AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
+
+        public void RequestBot(AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
         {
-            if(team == WrapperBotTeam.Either)
-            {
-                RequestBot(WrapperBotTeam.Blue, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
-                RequestBot(WrapperBotTeam.Red, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
-            }
-            else
-            {
-                BotRequest newRequest = new BotRequest(team, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
-                BotRequests.Add(newRequest);
-            }
+            RequestBot(Team.Blue, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
+            RequestBot(Team.Red, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
+        }
+
+
+        public void RequestBot(Team team, AIHero hero, Difficulty difficulty, BotRule rule, int minPlayersOnTeam, int maxPlayersOnTeam)
+        {
+            BotRequest newRequest = new BotRequest(team, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
+            BotRequests.Add(newRequest);
         }
 
         public void ClearBotRequests()
@@ -139,62 +142,58 @@ namespace BotLibrary
 
         public void UpdateBotSlots()
         {
-            UpdateBlueBotSlots();
-            UpdateRedBotSlots();
+            UpdateBotSlots(Team.Blue);
+            UpdateBotSlots(Team.Red);
+        }
+
+        private void UpdateBotSlots(Team team)
+        {
+            System.Threading.Thread.Sleep(500); //use cg wait for 
+            List<int> FilledSlots = wrapper.slots.all.Slots(team);
+            List<int> NewBotSlots = new List<int>();
+            foreach (int slot in FilledSlots)
+            {
+                bool isAi = cg.AI.IsAI(slot);
+                if (isAi)
+                {
+                    NewBotSlots.Add(slot);
+                }
+            }
+            BotSlots[team] = NewBotSlots;
         }
 
         private void UpdateBotExpectations()
         {
-            PrevBlueBotExpectations = new List<BotRequest>(BlueBotExpectations);
-            PrevRedBotExpectations = new List<BotRequest>(RedBotExpectations);
+            UpdateBotExpectations(Team.Blue);
+            UpdateBotExpectations(Team.Red);
+        }
 
-            BlueBotExpectations = new List<BotRequest>();
-            RedBotExpectations = new List<BotRequest>();
+        private void UpdateBotExpectations(Team team)
+        {
+            PrevBotExpectations[team] = new List<BotRequest>(BotExpectations[team]);
+
+            BotExpectations[team] = new List<BotRequest>();
 
             foreach (BotRequest request in BotRequests)
             {
-                if (request.Rule == BotRule.SmallerTeam)
+                if (request.BotTeam == team)
                 {
-                    if (request.Team == WrapperBotTeam.Blue && wrapper.slots.RedHasMorePlayers)
+
+                    if (request.Rule == BotRule.SmallerTeam && !wrapper.slots.TeamHasMorePlayers(team))
                     {
-                        BlueBotExpectations.Add(request);
+                        BotExpectations[team].Add(request);
                     }
-                    else if (request.Team == WrapperBotTeam.Red && wrapper.slots.BlueHasMorePlayers)
+                    else if (request.Rule == BotRule.EqualTeams && wrapper.slots.TeamsHaveEqualPlayers)
                     {
-                        RedBotExpectations.Add(request);
+                        BotExpectations[team].Add(request);
                     }
-                }
-                else if (request.Rule == BotRule.BothTeams)
-                {
-                    if (request.Team == WrapperBotTeam.Blue)
+                    else if (request.Rule == BotRule.LargerTeam && wrapper.slots.TeamHasMorePlayers(team))
                     {
-                        BlueBotExpectations.Add(request);
+                        BotExpectations[team].Add(request);
                     }
-                    else if (request.Team == WrapperBotTeam.Red)
+                    else if (request.Rule == BotRule.BothTeams)
                     {
-                        RedBotExpectations.Add(request);
-                    }
-                }
-                else if (request.Rule == BotRule.EqualTeams)
-                {
-                    if (request.Team == WrapperBotTeam.Blue && wrapper.slots.TeamsHaveEqualPlayers)
-                    {
-                        BlueBotExpectations.Add(request);
-                    }
-                    else if (request.Team == WrapperBotTeam.Red && wrapper.slots.TeamsHaveEqualPlayers)
-                    {
-                        RedBotExpectations.Add(request);
-                    }
-                }
-                else if (request.Rule == BotRule.LargerTeam)
-                {
-                    if (request.Team == WrapperBotTeam.Blue && wrapper.slots.BlueHasMorePlayers)
-                    {
-                        BlueBotExpectations.Add(request);
-                    }
-                    else if (request.Team == WrapperBotTeam.Red && wrapper.slots.RedHasMorePlayers)
-                    {
-                        RedBotExpectations.Add(request);
+                        BotExpectations[team].Add(request);
                     }
                 }
             }
@@ -202,186 +201,88 @@ namespace BotLibrary
 
         private void FulfillBotExpectations()
         {
-            if (BlueBotExpectations.Count != PrevBlueBotExpectations.Count)
+            FulfillBotExpectations(Team.Blue);
+            FulfillBotExpectations(Team.Red);
+        }
+        private bool IsBotStateCorrupt(Team team)
+        {
+            return PrevBotExpectations[team].Count != wrapper.slots.bots.Count(team);
+        }
+
+        private void FulfillBotExpectations(Team team)
+        {
+            if (BotExpectations[team].Count != PrevBotExpectations[team].Count)
             {
-                Debug.Log(string.Format("Blue bots previously {0}, now {1}.", PrevBlueBotExpectations.Count, BlueBotExpectations.Count));
-            }
-            if (RedBotExpectations.Count != PrevRedBotExpectations.Count)
-            {
-                Debug.Log(string.Format("Red bots previously {0}, now {1}.", PrevRedBotExpectations.Count, RedBotExpectations.Count));
+                Dev.Log(string.Format("{0} bots previously {1}, now {2}.", team.ToString(), PrevBotExpectations[team].Count, BotExpectations[team].Count));
             }
 
             List<BotRequest> alreadyFulfilled = new List<BotRequest>();
-            List<BotRequest> TempBlueBotExpectations = new List<BotRequest>(BlueBotExpectations);
+            List<BotRequest> TempBotExpectations = new List<BotRequest>(BotExpectations[team]);
 
             //is state corrupt?
-            if(PrevBlueBotExpectations.Count != wrapper.slots.BlueBotCount)
+            if (IsBotStateCorrupt(team))
             {
-                Debug.Log(string.Format("Blue bots corrupted. Count is {0}, should be {1}", wrapper.slots.BlueBotCount, PrevBlueBotExpectations.Count));
-                RemoveBlueBots();
-                foreach (BotRequest request in TempBlueBotExpectations)
+                Dev.Log(string.Format("{0} bots corrupted. Count is {1}, should be {2}", team.ToString(), wrapper.slots.bots.Count(team), PrevBotExpectations[team].Count));
+                RemoveBots(team);
+                foreach (BotRequest request in TempBotExpectations)
                 {
-                    BlueAddBot(request);
+                    AddBot(request);
                 }
             }
             else
             {
-                foreach (BotRequest oldRequest in PrevBlueBotExpectations.ToList())
+                foreach (BotRequest oldRequest in PrevBotExpectations[team].ToList())
                 {
                     bool fulfilled = false;
-                    foreach (BotRequest newRequest in TempBlueBotExpectations)
+                    foreach (BotRequest newRequest in TempBotExpectations)
                     {
                         if (oldRequest.Hero == newRequest.Hero && oldRequest.Difficulty == newRequest.Difficulty)
                         {
                             fulfilled = true;
                             alreadyFulfilled.Add(newRequest);
-                            PrevBlueBotExpectations.Remove(oldRequest);
-                            TempBlueBotExpectations.Remove(newRequest);
+                            PrevBotExpectations[team].Remove(oldRequest);
+                            TempBotExpectations.Remove(newRequest);
                             break;
                         }
                     }
                     if (!fulfilled)
                     {
-                        RemoveBlueBots();
-                        foreach (BotRequest request in TempBlueBotExpectations)
+                        RemoveBots(team);
+                        foreach (BotRequest request in TempBotExpectations)
                         {
-                            BlueAddBot(request);
+                            AddBot(request);
                         }
                         foreach (BotRequest request in alreadyFulfilled)
                         {
-                            BlueAddBot(request);
+                            AddBot(request);
                         }
                         break;
                     }
                 }
-                foreach (BotRequest request in TempBlueBotExpectations)
+                foreach (BotRequest request in TempBotExpectations)
                 {
-                    BlueAddBot(request);
+                    AddBot(request);
                 }
             }
-            UpdateBlueBotSlots();
+            UpdateBotSlots(team);
+        }
 
-            alreadyFulfilled = new List<BotRequest>();
-            List<BotRequest> TempRedBotExpectations = new List<BotRequest>(RedBotExpectations);
+        private void AddBot(BotRequest request)
+        {
+            AddBot(request.Hero, request.Difficulty, request.BotTeam);
+        }
 
-            //is state corrupt?
-            if (PrevRedBotExpectations.Count != wrapper.slots.RedBotCount)
+        private void AddBot(AIHero hero, Difficulty difficulty, Team team)
+        {
+            if (wrapper.slots.empty.Count(team) > 0)
             {
-                Debug.Log(string.Format("Red bots corrupted. Count is {0}, should be {1}", wrapper.slots.RedBotCount, PrevRedBotExpectations.Count));
-                RemoveRedBots();
-                foreach (BotRequest request in TempRedBotExpectations)
-                {
-                    RedAddBot(request);
-                }
+                cg.AI.AddAI(hero, difficulty, wrapper.TeamToBotTeam(team), 1);
             }
-            else
-            {
-                foreach (BotRequest oldRequest in PrevRedBotExpectations.ToList())
-                {
-                    bool fulfilled = false;
-                    foreach (BotRequest newRequest in TempRedBotExpectations)
-                    {
-                        if (oldRequest.Hero == newRequest.Hero && oldRequest.Difficulty == newRequest.Difficulty)
-                        {
-                            fulfilled = true;
-                            alreadyFulfilled.Add(newRequest);
-                            PrevRedBotExpectations.Remove(oldRequest);
-                            TempRedBotExpectations.Remove(newRequest);
-                            break;
-                        }
-                    }
-                    if (!fulfilled)
-                    {
-                        RemoveRedBots();
-                        foreach (BotRequest request in TempRedBotExpectations)
-                        {
-                            RedAddBot(request);
-                        }
-                        foreach (BotRequest request in alreadyFulfilled)
-                        {
-                            RedAddBot(request);
-                        }
-                        break;
-                    }
-                }
-                foreach (BotRequest request in TempRedBotExpectations)
-                {
-                    RedAddBot(request);
-                }
-            }
-            UpdateRedBotSlots();
-        }
-
-        private void BlueAddBot(BotRequest request)
-        {
-            BlueAddBot(request.Hero, request.Difficulty);
-        }
-
-        private void RedAddBot(BotRequest request)
-        {
-            RedAddBot(request.Hero, request.Difficulty);
-        }
-
-        private void BlueAddBot(AIHero hero, Difficulty difficulty)
-        {
-            if (wrapper.slots.BlueEmptyCount > 0)
-            {
-                BotTeam team = BotTeam.Blue;
-                AddBot(hero, difficulty, team);
-            }
-        }
-
-        private void RedAddBot(AIHero hero, Difficulty difficulty)
-        {
-            if (wrapper.slots.RedEmptyCount > 0)
-            {
-                BotTeam team = BotTeam.Red;
-                AddBot(hero, difficulty, team);
-            }
-        }
-
-        private void UpdateBlueBotSlots()
-        {
-            System.Threading.Thread.Sleep(500);
-            List<int> FilledSlots = cg.BlueSlots;
-            List<int> BotSlots = new List<int>();
-            foreach (int slot in FilledSlots)
-            {
-                bool isAi = cg.AI.IsAI(slot);
-                if (isAi)
-                {
-                    BotSlots.Add(slot);
-                }
-            }
-            BlueBotSlots = BotSlots;
-        }
-
-        private void UpdateRedBotSlots()
-        {
-            System.Threading.Thread.Sleep(500); //use cg wait for 
-            List<int> FilledSlots = cg.RedSlots;
-            List<int> BotSlots = new List<int>();
-            foreach (int slot in FilledSlots)
-            {
-                bool isAi = cg.AI.IsAI(slot);
-                if (isAi)
-                {
-                    BotSlots.Add(slot);
-                }
-            }
-            RedBotSlots = BotSlots;
-        }
-
-        private void AddBot(AIHero hero, Difficulty difficulty, BotTeam team)
-        {
-            wrapper.joins.LockSlots();
-            cg.AI.AddAI(hero, difficulty, team, 1);
-            wrapper.joins.UnlockSlots();
         }
 
         public void RemoveBotsIfAny()
         {
-            if (wrapper.slots.BotCount > 0)
+            if (wrapper.slots.bots.Count() > 0)
             {
                 RemoveBots();
             }
@@ -390,43 +291,18 @@ namespace BotLibrary
         public void RemoveBots()
         {
             cg.AI.RemoveAllBotsAuto();
-            BlueBotSlots = new List<int>();
-            RedBotSlots = new List<int>();
+            BotSlots[Team.Blue] = new List<int>();
+            BotSlots[Team.Red] = new List<int>();
         }
 
-        public void RemoveBlueBots()
+        public void RemoveBots(Team team)
         {
-            List<int> slots = wrapper.slots.BlueBotSlots;
+            List<int> slots = wrapper.slots.bots.Slots(team);
             foreach (int slot in slots)
             {
                 //todolater if returns false repair state
                 cg.AI.RemoveFromGameIfAI(slot);
             }
         }
-
-        public void RemoveRedBots()
-        {
-            List<int> slots = wrapper.slots.RedBotSlots;
-            foreach(int slot in slots) {
-                //todolater if returns false repair state
-                cg.AI.RemoveFromGameIfAI(slot);
-            }
-        }
-
-        //private int GetExpectedBotSlot(BotTeam team)
-        //{
-        //    List<int> EmptySlots;
-        //    if (team == BotTeam.Red)
-        //    {
-        //        EmptySlots = wrapper.slots.RedEmptySlots;
-        //    }
-        //    else
-        //    {
-        //        EmptySlots = wrapper.slots.BlueEmptySlots;
-        //    }
-        //    int ExpectedBotSlot = EmptySlots[0];
-        //    return ExpectedBotSlot;
-        //}
-
     }
 }

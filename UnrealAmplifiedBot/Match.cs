@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
     class MatchManager : WrapperComponent
@@ -22,7 +22,7 @@ namespace BotLibrary
 
         private void HandleGameOver(object sender, GameOverArgs args)
         {
-            Debug.Log("Running HandleGameOver");
+            Dev.Log("Running HandleGameOver");
             double passedSeconds = DateTime.Now.Subtract(lastGameOver).TotalSeconds;
             if (passedSeconds > 30)
             {
@@ -31,7 +31,7 @@ namespace BotLibrary
             }
             else
             {
-                Debug.Log("IGNORING GAME OVER, BECAUSE TOO SOON SINCE PREVIOUS GAME OVER");
+                Dev.Log("IGNORING GAME OVER, BECAUSE TOO SOON SINCE PREVIOUS GAME OVER");
             }
         }
 
@@ -54,7 +54,7 @@ namespace BotLibrary
 
         private void PerformGameOverArgumentFuncs(object sender, GameOverArgs args)
         {
-            Debug.Log("Running game over arg funcs");
+            Dev.Log("Running game over arg funcs");
             foreach (System.EventHandler<Deltin.CustomGameAutomation.GameOverArgs> func in gameOverArgumentFuncs)
             {
                 func(sender, args);
@@ -63,7 +63,7 @@ namespace BotLibrary
 
         public void PerformGameOverFuncs()
         {
-            Debug.Log("Running game over funcs");
+            Dev.Log("Running game over funcs");
             foreach (Action func in gameOverFuncs)
             {
                 func();
@@ -77,13 +77,13 @@ namespace BotLibrary
 
 
             bool consistentlyEmpty = true;
-            if (wrapper.players.RedPlayerCountHistory.Count > timeServerMustBeEmptyToTimeout)
+            if (wrapper.players.PlayerCountHistory[Team.Red].Count > timeServerMustBeEmptyToTimeout)
             {
                 for (int i = 0; i < timeServerMustBeEmptyToTimeout; i++)
                 {
                     try
                     {
-                        if (wrapper.players.RedPlayerCountHistory[wrapper.players.RedPlayerCountHistory.Count - i - 1] + wrapper.players.BluePlayerCountHistory[wrapper.players.BluePlayerCountHistory.Count - i - 1] > 0)
+                        if (wrapper.players.PlayerCountHistory[Team.Red][wrapper.players.PlayerCountHistory[Team.Red].Count - i - 1] + wrapper.players.PlayerCountHistory[Team.Blue][wrapper.players.PlayerCountHistory[Team.Blue].Count - i - 1] > 0)
                         {
                             consistentlyEmpty = false;
                             break;

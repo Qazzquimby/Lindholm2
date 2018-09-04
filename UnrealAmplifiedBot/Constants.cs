@@ -1,36 +1,64 @@
-﻿using System;
+﻿using Deltin.CustomGameAutomation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnrealAmplifiedBot
+namespace Lindholm
 {
-    public partial class Lindholm
+    public partial class Lindholm : IDisposable
     {
-        public enum BotTeam
+
+        public BotTeam TeamToBotTeam(Team team)
         {
-            Both,
-            Blue,
-            Red
+            if (team == Team.Blue)
+            {
+                return BotTeam.Blue;
+            }
+            else
+            {
+                return BotTeam.Red;
+            }
         }
-        public enum InviteTeam
+
+        public Team OtherTeam(Team team)
         {
-            Blue,
-            Red,
-            Spectator,
-            Both
+            if(team == Team.Blue)
+            {
+                return Team.Red;
+            }
+            else
+            {
+                return Team.Blue;
+            }
         }
-        public enum PlayerTeam
+
+        public Team TeamWithSlot(int slot)
         {
-            Blue,
-            Red
+            if (slots.all.Slots(Team.Blue).Contains(slot))
+            {
+                return Team.Blue;
+            }
+            else if(slots.all.Slots(Team.Red).Contains(slot))
+            {
+                return Team.Red;
+            }
+            else
+            {
+                throw ( new ArgumentOutOfRangeException("Slot must belong to red or blue."));
+            }
+
         }
-        public enum Team
-        {
-            Blue,
-            Red,
-            Spectator
-        }
+
+        public readonly List<Team> TEAMS = new List<Team>() { Team.Blue, Team.Red };
+
     }
+
+    public enum Team // For designer use in referring to teams. Doesn't mirror any in game use of teams, like BotTeam or InviteTeam. No value generally indicates both teams.
+    {
+        Blue,
+        Red,
+    }
+
 }

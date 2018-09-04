@@ -1,29 +1,29 @@
-﻿using BotLibrary;
+﻿using Lindholm;
 using Deltin.CustomGameAutomation;
 using System;
 using System.Collections.Generic;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
-    class Lindholm : IDisposable
+    partial class Lindholm : IDisposable
     {
         public CustomGame cg;
 
-        public GameLoop loop;
+        internal GameLoop loop;
 
-        public Chat chat;
-        public PhaseManager phases;
-        public MatchManager match;
-        public MapChooser maps;
+        internal Chat chat;
+        internal PhaseManager phases;
+        internal MatchManager match;
+        internal MapChooser maps;
 
-        public BotManager bots;
-        public PlayerManager players;
+        internal BotManager bots;
+        internal PlayerManager players;
 
 
-        public MatchLogger logger;
-        public SlotManager slots;
-        public JoinManager joins;
+        internal MatchLogger logger;
+        internal SlotManager slots;
+        internal JoinManager joins;
 
         public int ServerDuration
         {
@@ -41,7 +41,8 @@ namespace BotLibrary
         {
             builder.ScreenshotMethod = screenshotMethod;
             builder.OpenChatIsDefault = true; //todolater turn on only when command listening is on.
-            cg = new CustomGame(builder);          
+            cg = new CustomGame(builder);
+            slots = new SlotManager(this);
 
             bots = new BotManager(this);
             players = new PlayerManager(this);
@@ -54,7 +55,7 @@ namespace BotLibrary
             phases = new PhaseManager(this);
             maps = new MapChooser(this, Map.A_HorizonLunarColony); //todolater get this from the user. Also need to load preset
 
-            slots = new SlotManager(this);
+            
             joins = new JoinManager(this);
 
             loop.AddPhaselessLoop(Tick_IncrementTime, 1);
@@ -91,7 +92,7 @@ namespace BotLibrary
 
         public void Start()
         {
-            Debug.Log("Starting");
+            Dev.Log("Starting");
             FixNames();
             chat.Start();
             PerformStartFunctions();
@@ -130,6 +131,7 @@ namespace BotLibrary
         public void Dispose()
         {
             cg.Dispose();
+            
         }
 
         private void Tick_IncrementTime()

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
-    class GameLoop : WrapperComponent
+    internal class GameLoop : WrapperComponent
     {
         public int TicksPerSecond = 10;
         public int StandardDelay = 5;

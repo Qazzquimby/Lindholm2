@@ -1,6 +1,6 @@
 ﻿using Deltin.CustomGameAutomation;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
 

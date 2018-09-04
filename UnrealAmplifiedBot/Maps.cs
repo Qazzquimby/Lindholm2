@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
 
@@ -56,6 +56,13 @@ namespace BotLibrary
         public void SetProbability(Map map)
         {
 
+        }
+
+        public bool IsDMOrTDM
+        {
+            get{
+                return currMap.GameMode == Gamemode.Deathmatch || currMap.GameMode == Gamemode.TeamDeathmatch;
+            }
         }
 
         private Dictionary<Map, float> MapProbabilities = new Dictionary<Map, float>();
@@ -178,9 +185,9 @@ namespace BotLibrary
         public void NextMap()
         {
             //todo set MatchManger match duration to 0 on new match
-            Debug.Log("Restarting game");
+            Dev.Log("Restarting game");
             cg.RestartGame();
-            Debug.Log("Entering setup phase");
+            Dev.Log("Entering setup phase");
             wrapper.phases.EnterPhase(wrapper.phases.SetUpPhaseConstructor());
         }
 

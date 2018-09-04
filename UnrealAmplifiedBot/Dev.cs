@@ -1,7 +1,7 @@
-﻿namespace BotLibrary
+﻿namespace Lindholm
 {
 
-    static class Debug
+    static class Dev
     {
         public static bool PRINT_TO_CONSOLE = true;
 

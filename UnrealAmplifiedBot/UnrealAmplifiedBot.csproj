@@ -70,7 +70,7 @@
     <Compile Include="BotManager.cs" />
     <Compile Include="Chat.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Debug.cs" />
+    <Compile Include="Dev.cs" />
     <Compile Include="Loop.cs" />
     <Compile Include="Joins.cs" />
     <Compile Include="Maps.cs" />
@@ -79,7 +79,7 @@
     <Compile Include="Phases.cs" />
     <Compile Include="Players.cs" />
     <Compile Include="SlotManager.cs" />
-    <Compile Include="WrapperLibrary.cs" />
+    <Compile Include="Lindholm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

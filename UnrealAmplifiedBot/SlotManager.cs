@@ -1,262 +1,209 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Deltin.CustomGameAutomation;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
-    class SlotManager : WrapperComponent
+    internal abstract class BaseSlots
     {
-        public SlotManager(Lindholm wrapper) : base(wrapper) { }
+        internal BaseSlots() { }
 
-        public List<int> BlueSlots
+        public List<int> Slots()
         {
-            get
+            return Slots(Team.Blue).Union(Slots(Team.Red)).ToList();
+        }
+
+        public List<int> Slots(Team team)
+        {
+            if (team == Team.Blue)
             {
-                return new List<int>() { 0, 1, 2, 3, 4, 5 };
+                return BlueSlots;
+            }
+            else
+            {
+                return RedSlots;
             }
         }
 
-        public int BlueCount
+        public int Count()
         {
-            get
-            {
-                return BlueSlots.Count;
-            }
+            return Slots().Count;
         }
 
-
-        public List<int> RedSlots
+        public int Count(Team team)
         {
-            get
-            {
-                return new List<int>() { 6, 7, 8, 9, 10, 11 };
-            }
-
+            return Slots(team).Count;
         }
 
-        public int RedCount
+        //USER DEFINED
+        abstract protected List<int> BlueSlots { get; }
+        abstract protected List<int> RedSlots { get; }
+    }
+
+    internal class PlayerSlots : BaseSlots
+    {
+        PlayerManager playerManager;
+        public PlayerSlots(PlayerManager playerManager) : base()
         {
-            get
-            {
-                return RedSlots.Count;
-            }
+            this.playerManager = playerManager;
         }
 
-
-        public List<int> Slots
-        {
-            get
-            {
-                return new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 };
-            }
-        }
-
-        public int Count
-        {
-            get
-            {
-                return Slots.Count;
-            }
-        }
-
-
-
-        public List<int> BlueEmptySlots
-        {
-            get
-            {
-                return BlueSlots.Except(cg.BlueSlots).ToList();
-            }
-
-        }
-
-        public int BlueEmptyCount
-        {
-            get
-            {
-                return BlueEmptySlots.Count;
-            }
-        }
-
-
-        public List<int> RedEmptySlots
-        {
-            get
-            {
-                return RedSlots.Except(cg.RedSlots).ToList();
-            }
-
-        }
-
-        public int RedEmptyCount
-        {
-            get
-            {
-                return RedEmptySlots.Count;
-            }
-        }
-
-
-        public List<int> EmptySlots
-        {
-            get
-            {
-                return BlueEmptySlots.Concat(RedEmptySlots).ToList();
-            }
-        }
-
-        public int EmptyCount
-        {
-            get
-            {
-                return EmptySlots.Count;
-            }
-        }
-
-
-
-        public List<int> BluePlayerSlots
-        {
-            get
-            {
+        protected override List<int> BlueSlots {
+            get {
                 try
                 {
-                    return wrapper.players.BluePlayerSlotHistory[wrapper.players.BluePlayerSlotHistory.Count - 1];
+                    return playerManager.PlayerSlotHistory[Team.Blue][playerManager.PlayerSlotHistory[Team.Blue].Count - 1];
                 }
                 catch (ArgumentOutOfRangeException)
                 {
                     return new List<int>();
                 }
-                
             }
         }
 
-        public int BluePlayerCount
-        {
-            get
-            {
-                return BluePlayerSlots.Count;
-            }
-        }
-
-
-        public List<int> RedPlayerSlots
-        {
-            get
-            {
+        protected override List<int> RedSlots {
+            get {
                 try
                 {
-                    return wrapper.players.RedPlayerSlotHistory[wrapper.players.RedPlayerSlotHistory.Count - 1];
-                } catch (ArgumentOutOfRangeException)
+                    return playerManager.PlayerSlotHistory[Team.Red][playerManager.PlayerSlotHistory[Team.Red].Count - 1];
+                }
+                catch (ArgumentOutOfRangeException)
                 {
                     return new List<int>();
                 }
-                
             }
         }
+    }
 
-        public int RedPlayerCount
+    internal class BotSlots : BaseSlots
+    {
+        private BotManager botManager;
+
+        public BotSlots(BotManager botManager) : base()
         {
-            get
-            {
-                return RedPlayerSlots.Count;
+            this.botManager = botManager;
+        }
+
+        protected override List<int> BlueSlots {
+            get {
+                return botManager.IBlueBotSlots;
             }
         }
 
+        protected override List<int> RedSlots {
+            get {
+                return botManager.IRedBotSlots;
+            }
+        }
+    }
 
-        public List<int> PlayerSlots
+
+    class SlotManager : WrapperComponent
+    {
+        public AllSlots all;
+        public EmptySlots empty;
+        public FilledSlots filled;
+        public PlayerSlots players;
+        public BotSlots bots;
+
+        public SlotManager(Lindholm wrapper) : base(wrapper)
         {
-            get
-            {
-                return BluePlayerSlots.Concat(RedPlayerSlots).ToList();
-            }
+            all = new AllSlots();
+            filled = new FilledSlots(this.cg);
+            empty = new EmptySlots(this);
         }
 
-        public int PlayerCount
+        public class AllSlots : BaseSlots
         {
-            get
+            public AllSlots() : base()
             {
-                return PlayerSlots.Count;
+            }
+
+            protected override List<int> BlueSlots {
+                get {
+                    return new List<int>() { 0, 1, 2, 3, 4, 5 };
+                }
+            }
+
+            protected override List<int> RedSlots {
+                get {
+                    return new List<int>() { 6, 7, 8, 9, 10, 11 };
+                }
             }
         }
 
-
-        public bool BlueHasMorePlayers
+        public class FilledSlots : BaseSlots
         {
-            get
+            private CustomGame cg;
+            public FilledSlots(CustomGame cg) : base()
             {
-                return BluePlayerCount > RedPlayerCount;
+                this.cg = cg;
+            }
+
+            protected override List<int> BlueSlots {
+                get {
+                    return cg.BlueSlots;
+                }
+            }
+
+            protected override List<int> RedSlots {
+                get {
+                    return cg.RedSlots;
+                }
             }
         }
 
-        public bool RedHasMorePlayers
+        public class EmptySlots : BaseSlots
         {
-            get
+            private SlotManager slotManager;
+            public EmptySlots(SlotManager slotManager) : base()
             {
-                return RedPlayerCount > BluePlayerCount;
+                this.slotManager = slotManager;
+            }
+
+            protected override List<int> BlueSlots {
+                get {
+                    return slotManager.all.Slots(Team.Blue).Except(slotManager.cg.BlueSlots).ToList();
+                }
+            }
+
+            protected override List<int> RedSlots {
+                get {
+                    return slotManager.all.Slots(Team.Blue).Except(slotManager.cg.RedSlots).ToList();
+                }
             }
         }
 
-        public bool TeamsHaveEqualPlayers
+        public bool TeamHasMorePlayers(Team team)
         {
-            get
+            if (team == Team.Blue)
             {
-                return BluePlayerCount == RedPlayerCount;
+                return players.Count(Team.Blue) > players.Count(Team.Red);
+            }
+            else
+            {
+                return players.Count(Team.Red) > players.Count(Team.Blue);
             }
         }
 
-
-        public List<int> BlueBotSlots
+        public Team TeamWithMoreOrEqualPlayers()
         {
-            get
+            if (TeamHasMorePlayers(Team.Blue))
             {
-                return wrapper.bots.IBlueBotSlots;
+                return Team.Blue;
+            }
+            else
+            {
+                return Team.Red;
             }
         }
 
-        public int BlueBotCount
-        {
-            get
-            {
-                return BlueBotSlots.Count;
+        public bool TeamsHaveEqualPlayers {
+            get {
+                return players.Count(Team.Blue) == players.Count(Team.Red);
             }
         }
-
-
-        public List<int> RedBotSlots
-        {
-            get
-            {
-                return wrapper.bots.IRedBotSlots;
-            }
-        }
-
-        public int RedBotCount
-        {
-            get
-            {
-                return RedBotSlots.Count;
-            }
-        }
-
-
-        public List<int> BotSlots
-        {
-            get
-            {
-                return BlueBotSlots.Concat(RedBotSlots).ToList();
-            }
-
-        }
-
-        public int BotCount
-        {
-            get
-            {
-                return BotSlots.Count;
-            }
-        }
-
     }
 }

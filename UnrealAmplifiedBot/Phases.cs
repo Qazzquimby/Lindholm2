@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace BotLibrary
+namespace Lindholm
 {
     class Phase
     {
@@ -178,6 +178,7 @@ namespace BotLibrary
             gamePhase.AddEntry(wrapper.chat.EnsureMatchChat);
 
             gamePhase.AddLoop(wrapper.players.UpdatePlayers, wrapper.loop.StandardDelay);
+            gamePhase.AddLoop(wrapper.players.HandleJoinsAndLeaves, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.logger.UpdatematchLog, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.players.balancer.PerformAutoBalance, wrapper.loop.StandardDelay);
             gamePhase.AddLoop(wrapper.match.PreventMapTimeout, 300);
@@ -221,7 +222,7 @@ namespace BotLibrary
             //tempi++;
             if (wrapper.match.gameEnded)
             {
-                Debug.Log("Entering gameEndingPhase");
+                Dev.Log("Entering gameEndingPhase");
                 EnterPhase(gameEndingPhase);
             }
         }
@@ -230,14 +231,14 @@ namespace BotLibrary
         {
             if (cg.GetGameState() == GameState.Ending_Commend)
             {
-                Debug.Log("Missed game over");
+                Dev.Log("Missed game over");
                 wrapper.match.HandleArgumentlessGameOver();
             }
         }
         
         private void EndSetUpPhase()
         {
-            Debug.Log("Entering game phase");
+            Dev.Log("Entering game phase");
             EnterPhase(gamePhase);
         }
 

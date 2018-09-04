@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace BotLibrary
+namespace Lindholm
 {
 
     //todo track the length a hero is played before swapping off. Account for the player changing slots.
@@ -36,24 +36,24 @@ namespace BotLibrary
         {
             if (currMatchLog != null)
             {
-                if (wrapper.slots.PlayerCount > 0)
+                if (wrapper.slots.players.Count() > 0)
                 {
                     currMatchLog.duration++;
 
-                    currMatchLog.player_count[Team.Blue] += wrapper.slots.BluePlayerCount;
-                    currMatchLog.player_count[Team.Red] += wrapper.slots.RedPlayerCount;
+                    currMatchLog.player_count[Team.Blue] += wrapper.slots.players.Count(Team.Blue);
+                    currMatchLog.player_count[Team.Red] += wrapper.slots.players.Count(Team.Red);
 
-                    int BlueJoins = wrapper.players.BlueJoinCount;
-                    int BlueLeaves = wrapper.players.BlueLeaveCount;
+                    int BlueJoins = wrapper.players.joins.Count(Team.Blue);
+                    int BlueLeaves = wrapper.players.leaves.Count(Team.Blue);
 
-                    int RedJoins = wrapper.players.BlueJoinCount;
-                    int RedLeaves = wrapper.players.BlueLeaveCount;
+                    int RedJoins = wrapper.players.joins.Count(Team.Red);
+                    int RedLeaves = wrapper.players.joins.Count(Team.Red);
 
                     currMatchLog.joins += BlueJoins + RedJoins;
                     currMatchLog.leaves += BlueLeaves + RedLeaves;
 
 
-                    foreach (int slot in wrapper.slots.BluePlayerSlots)
+                    foreach (int slot in wrapper.slots.players.Slots(Team.Blue))
                     {
                         Hero? hero_or_null = cg.PlayerInfo.GetHero(slot);
                         if (hero_or_null != null)
@@ -62,7 +62,7 @@ namespace BotLibrary
                             currMatchLog.hero_play_time[Team.Blue][hero]++;
                         }
                     }
-                    foreach (int slot in wrapper.slots.RedPlayerSlots)
+                    foreach (int slot in wrapper.slots.players.Slots(Team.Red))
                     {
                         Hero? hero_or_null = cg.PlayerInfo.GetHero(slot);
                         if (hero_or_null != null)
