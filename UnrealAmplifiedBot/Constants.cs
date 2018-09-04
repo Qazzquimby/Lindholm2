@@ -1,16 +1,24 @@
 ﻿using Deltin.CustomGameAutomation;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Lindholm
 {
-    public partial class Lindholm : IDisposable
+    public partial class Game : IDisposable
     {
 
-        public BotTeam TeamToBotTeam(Team team)
+        private Collection<Team> teams = new Collection<Team>() { Team.Blue, Team.Red };
+
+        public Collection<Team> Teams { get => teams; }
+    }
+
+    public static class TeamExtension
+    {
+        public static BotTeam ToBotTeam(this Team team)
         {
             if (team == Team.Blue)
             {
@@ -22,9 +30,9 @@ namespace Lindholm
             }
         }
 
-        public Team OtherTeam(Team team)
+        public static Team Other(this Team team)
         {
-            if(team == Team.Blue)
+            if (team == Team.Blue)
             {
                 return Team.Red;
             }
@@ -33,26 +41,6 @@ namespace Lindholm
                 return Team.Blue;
             }
         }
-
-        public Team TeamWithSlot(int slot)
-        {
-            if (slots.all.Slots(Team.Blue).Contains(slot))
-            {
-                return Team.Blue;
-            }
-            else if(slots.all.Slots(Team.Red).Contains(slot))
-            {
-                return Team.Red;
-            }
-            else
-            {
-                throw ( new ArgumentOutOfRangeException("Slot must belong to red or blue."));
-            }
-
-        }
-
-        public readonly List<Team> TEAMS = new List<Team>() { Team.Blue, Team.Red };
-
     }
 
     public enum Team // For designer use in referring to teams. Doesn't mirror any in game use of teams, like BotTeam or InviteTeam. No value generally indicates both teams.

@@ -1,0 +1,25 @@
+﻿<#@  template hostspecific="false" language="C#" debug="true"#>  
+<#@ output extension=".cs" #>  
+<#@ assembly name="$(SolutionDir)/UnrealAmplifiedBot\Deltin\Deltin.CustomGameAutomation bin\Deltin.CustomGameAutomation.dll" #>
+// ReSharper disable UnusedMember.Global
+using System;
+
+namespace Lindholm.Bots{
+	public enum AiHero {
+	<#	foreach (var key in Enum.GetValues(typeof(Deltin.CustomGameAutomation.AIHero))) { #>  
+		<#= key #>, 
+	<# } #>  
+	}
+
+	public static class AiHeroExtension
+	{
+		public static Deltin.CustomGameAutomation.AIHero ToDeltin(this AiHero lindholmHero)
+		{
+			Deltin.CustomGameAutomation.AIHero deltinHero = (Deltin.CustomGameAutomation.AIHero) Enum.Parse(typeof(Deltin.CustomGameAutomation.AIHero), lindholmHero.ToString());
+			return deltinHero;
+		}
+	}
+}
+
+
+

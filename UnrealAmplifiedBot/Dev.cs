@@ -3,7 +3,7 @@
 
     static class Dev
     {
-        public static bool PRINT_TO_CONSOLE = true;
+        //public static bool PRINT_TO_CONSOLE = true;
 
         public static void Log(string text)
         {

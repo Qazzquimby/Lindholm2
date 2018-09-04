@@ -1,0 +1,26 @@
+﻿<#@  template hostspecific="false" language="C#" debug="true"#>  
+<#@ output extension=".cs" #>  
+<#@ assembly name="$(SolutionDir)/UnrealAmplifiedBot/Deltin/Deltin.CustomGameAutomation bin/Deltin.CustomGameAutomation.dll" #>
+
+// ReSharper disable UnusedMember.Global
+using System;
+
+namespace Lindholm.Chat{
+	public enum Channel {
+	<#	foreach (var key in Enum.GetValues(typeof(Deltin.CustomGameAutomation.Channel))) { #>  
+		<#= key #>, 
+	<# } #>  
+	}
+
+	public static class ChannelExtension
+	{
+		public static Deltin.CustomGameAutomation.Channel ToDeltin(this Channel lindholmChannel)
+		{
+			Deltin.CustomGameAutomation.Channel deltinChannel = (Deltin.CustomGameAutomation.Channel) Enum.Parse(typeof(Deltin.CustomGameAutomation.Channel), lindholmChannel.ToString());
+			return deltinChannel;
+		}
+	}
+}
+
+
+

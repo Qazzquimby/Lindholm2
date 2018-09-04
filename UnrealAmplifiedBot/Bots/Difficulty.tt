@@ -1,0 +1,27 @@
+﻿<#@  template hostspecific="false" language="C#" debug="true"#>  
+<#@ output extension=".cs" #>  
+<#@ assembly name="$(SolutionDir)\UnrealAmplifiedBot\Deltin\Deltin.CustomGameAutomation bin\Deltin.CustomGameAutomation.dll" #>
+// ReSharper disable UnusedMember.Global
+using System;
+using Deltin.CustomGameAutomation;
+
+namespace Lindholm.Bots{
+	public enum Difficulty {
+	<#	foreach (var key in Enum.GetValues(typeof(Deltin.CustomGameAutomation.Difficulty))) { #>  
+		<#= key #>, 
+	<# } #>  
+	}
+
+
+	public static class DifficultyExtension
+	{
+		public static Deltin.CustomGameAutomation.Difficulty ToDeltin(this Difficulty lindholmDifficulty)
+		{
+			Deltin.CustomGameAutomation.Difficulty deltinDifficulty = (Deltin.CustomGameAutomation.Difficulty) Enum.Parse(typeof(Deltin.CustomGameAutomation.Difficulty), lindholmDifficulty.ToString());
+			return deltinDifficulty;
+		}
+	}
+}
+
+
+
