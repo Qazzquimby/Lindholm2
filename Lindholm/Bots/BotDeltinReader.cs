@@ -2,36 +2,36 @@
 
 namespace Lindholm.Bots
 {
-    internal class BotDeltinReader
+    internal class BotDeltinReader : IBotDeltinReader
     {
         private readonly Deltin.CustomGameAutomation.AI _ai;
 
-        private BotDeltinReader(Deltin.CustomGameAutomation.AI ai)
+        public BotDeltinReader(Deltin.CustomGameAutomation.AI ai)
         {
             _ai = ai;
         }
 
-        internal bool SafeIsAi(int slot)
+        public bool SafeIsAi(int slot)
         {
             return _ai.AccurateIsAI(slot);
         }
 
-        internal List<int> SafeGetBotSlots()
+        public List<int> SafeGetBotSlots()
         {
             return _ai.GetAISlots(accurate: true);
         }
 
-        internal bool FastIsAi(int slot)
+        public bool FastIsAi(int slot)
         {
             return _ai.IsAI(slot);
         }
 
-        internal List<int> FastGetBotSlots()
+        public List<int> FastGetBotSlots()
         {
             return _ai.GetAISlots(accurate: false);
         }
 
-        internal void CalibrateSafeIsAi()
+        public void CalibrateSafeIsAi()
         {
             _ai.CalibrateAIChecking();
         }

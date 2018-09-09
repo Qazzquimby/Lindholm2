@@ -22,30 +22,43 @@ namespace Lindholm
             return new GameLoop(phaseManager);
         }
 
-        public ChatManagerManager ChatBuilder(Deltin.CustomGameAutomation.Chat deltinChat)
+        public IChatManager ChatBuilder(Deltin.CustomGameAutomation.Chat deltinChat)
         {
-            ChatDeltinChannelSwapper deltinChannelSwapper = new ChatDeltinChannelSwapper(deltinChat);
-            ChatChannelSwapper chatChannelSwapper = new ChatChannelSwapper(deltinChannelSwapper);
+            IChatDeltinChannelSwapper deltinChannelSwapper = new ChatDeltinChannelSwapper(deltinChat);
+            IChatChannelSwapper chatChannelSwapper = new ChatChannelSwapper(deltinChannelSwapper);
 
-            ChatDecorator chatDecorator = new ChatDecorator();
+            IChatDecorator chatDecorator = new ChatDecorator();
 
-            ChatDeltinPrinter deltinPrinter = new ChatDeltinPrinter(deltinChat);
+            IChatDeltinPrinter deltinPrinter = new ChatDeltinPrinter(deltinChat);
 
-            ChatManagerManager chat = new ChatManagerManager(chatChannelSwapper, chatDecorator, deltinPrinter);
+            IChatManager chat = new ChatManager(chatChannelSwapper, chatDecorator, deltinPrinter);
             return chat;
         }
 
-        public SlotsManager SlotBuilder()
+        public ISlotContentHistory SlotContentHistoryBuilder()
         {
-            SlotsManager slots = new SlotsManager();
+            return new SlotContentHistory();
+        }
+        
+        public ISlotManager SlotBuilder()
+        {
+            SlotContentHistory history = new SlotContentHistory();
+            BotSlotManager botSlots = new BotSlotManager(history);
+            SlotManager slots = new SlotManager(history, botSlots);
             return slots;
         }
 
-        public BotManager BotBuilder(SlotsManager slots)
+        public IBotManager BotBuilder(Deltin.CustomGameAutomation.AI ai, ISlotManager slots)
         {
-            BotRequester requester = new BotRequester();
-            BotExpectations expectations = new BotExpectations(requester, slots);
-            BotManager bots = new BotManager(requester, expectations);
+            IBotRequester requester = new BotRequester();
+
+            IBotExpectations expectations = new BotExpectations(requester, slots);
+
+            IBotDeltinManipulator deltinManipulator = new BotDeltinManipulator(ai);
+            IBotManipulation manipulation = new BotManipulation(slots, deltinManipulator);
+            IBotRequestFulfillmentManager botRequestFulfillmentManager = new BotRequestFulfillmentManager(expectations, manipulation, slots.BotSlotManager);
+
+            IBotManager bots = new BotManager(requester, expectations, botRequestFulfillmentManager);
             return bots;
         }
 

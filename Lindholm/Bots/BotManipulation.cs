@@ -3,48 +3,60 @@ using Lindholm.Slots;
 
 namespace Lindholm.Bots
 {
-    internal class BotManipulation
+    internal class BotManipulation : IBotManipulation
     {
-        private readonly SlotsManager _slots;
-        private readonly BotDeltinManipulator _deltin;
+        private readonly ISlotManager _slots;
+        private readonly IBotDeltinManipulator _deltin;
 
-        public BotManipulation(SlotsManager slots)
+        public BotManipulation(ISlotManager slots, IBotDeltinManipulator deltin)
         {
             _slots = slots;
+            _deltin = deltin;
         }
 
-        internal void AddBot(BotRequest request)
+        public void AddBots(List<BotRequest> requests)
+        {
+            foreach (BotRequest request in requests)
+            {
+                AddBot(request);
+            }
+        }
+
+        public void AddBot(BotRequest request)
         {
             AddBot(request.Hero, request.Difficulty, request.BotTeam);
         }
 
-        internal void AddBot(AiHero hero, Difficulty difficulty, Team team)
+        public void AddBot(AiHero hero, Difficulty difficulty, Team team)
         {
             if (_slots.Empty.Count(team) > 0)
             {
+                _slots.BotSlotManager.BotsModified = true;
                 _deltin.AddAi(hero, difficulty, team);
             }
         }
 
         internal void RemoveBotsIfAny()
         {
-            if (_slots.Bots.Count() > 0)
+            if (_slots.BotSlotManager.BotSlots.Count() > 0)
             {
                 RemoveBots();
             }
         }
 
-        internal void RemoveBots()
+        public void RemoveBots()
         {
+            _slots.BotSlotManager.BotsModified = true;
             _deltin.RemoveBots();
         }
 
-        internal void RemoveBots(Team team)
+        public void RemoveBots(Team team)
         {
-            List<int> botSlots = _slots.Bots.Slots(team);
+            List<int> botSlots = _slots.BotSlotManager.BotSlots.Slots(team);
             foreach (int slot in botSlots)
             {
-                //todolater if returns false repair state
+                //todo later if returns false repair state
+                _slots.BotSlotManager.BotsModified = true;
                 _deltin.RemoveBot(slot);
             }
         }

@@ -1,33 +1,34 @@
 ﻿using System.Collections.Generic;
+using Lindholm.Slots;
 
 namespace Lindholm.Bots
 {
-    internal class BotExpectations
+    internal class BotExpectations : IBotExpectations
     {
-        private readonly BotRequester _botRequester;
-        private readonly Slots.SlotsManager _slots;
+        private readonly IBotRequester _botRequester;
+        private readonly ISlotManager _slots;
 
-        internal BotExpectations(BotRequester botRequester, Slots.SlotsManager slots)
+        internal BotExpectations(IBotRequester botRequester, ISlotManager slots)
         {
             _botRequester = botRequester;
             _slots = slots;
         }
 
-        internal Dictionary<Team, List<BotRequest>> Expectations { get; }
+        public Dictionary<Team, List<BotRequest>> Expectations { get; }
             = new Dictionary<Team, List<BotRequest>>
             {
                 {Team.Blue, new List<BotRequest>()},
                 {Team.Red, new List<BotRequest>()}
             };
 
-        internal Dictionary<Team, List<BotRequest>> PreviousExpectations { get; }
+        public Dictionary<Team, List<BotRequest>> PreviousExpectations { get; }
             = new Dictionary<Team, List<BotRequest>>
             {
                 {Team.Blue, new List<BotRequest>()},
                 {Team.Red, new List<BotRequest>()}
             };
 
-        internal void UpdateBotExpectations()
+        public void UpdateBotExpectations()
         {
             UpdateBotExpectations(Team.Blue);
             UpdateBotExpectations(Team.Red);

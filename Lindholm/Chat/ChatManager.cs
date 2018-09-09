@@ -1,6 +1,6 @@
 ﻿namespace Lindholm.Chat
 {
-    internal class ChatManagerManager : IChatManager
+    internal class ChatManager : IChatManager
     {
         private readonly IChatDeltinPrinter _deltinPrinter;
 
@@ -8,7 +8,7 @@
 
         public IChatDecorator Decorator { get; }
 
-        public ChatManagerManager(IChatChannelSwapper channelSwapper, IChatDecorator decorator, IChatDeltinPrinter deltinPrinter)
+        public ChatManager(IChatChannelSwapper channelSwapper, IChatDecorator decorator, IChatDeltinPrinter deltinPrinter)
         {
             ChannelSwapper = channelSwapper;
             Decorator = decorator;

@@ -2,21 +2,23 @@
 
 namespace Lindholm.Bots
 {
-    public class BotManager
+    public class BotManager : IBotManager
     {
-        public BotRequester BotRequester { get; }
-        private BotExpectations BotExpectations { get; }
+        public IBotRequester BotRequester { get; }
+        private IBotExpectations BotExpectations { get; }
+        public IBotRequestFulfillmentManager BotRequestFulfillmentManager { get; }
 
-        internal BotManager(BotRequester botRequester, BotExpectations botExpectations)
+        internal BotManager(IBotRequester botRequester, IBotExpectations botExpectations, IBotRequestFulfillmentManager botRequestFulfillmentManager)
         {
             BotRequester = botRequester;
             BotExpectations = botExpectations;
+            BotRequestFulfillmentManager = botRequestFulfillmentManager;
         }
 
 
 //        private bool IsBotStateCorrupt(Team team)
 //        {
-//            return _previousBotExpectations[team].Count != wrapper.Slots.bots.Count(team);
+//            return _previousBotExpectations[team].Count != wrapper.BotSlots.bots.Count(team);
 //        }
 
 

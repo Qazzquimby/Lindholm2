@@ -36,12 +36,12 @@
 //        {
 //            if (currMatchLog != null)
 //            {
-//                if (wrapper.Slots.Players.Count() > 0)
+//                if (wrapper.BotSlots.Players.Count() > 0)
 //                {
 //                    currMatchLog.duration++;
 //
-//                    currMatchLog.player_count[Team.Blue] += wrapper.Slots.Players.Count(Team.Blue);
-//                    currMatchLog.player_count[Team.Red] += wrapper.Slots.Players.Count(Team.Red);
+//                    currMatchLog.player_count[Team.Blue] += wrapper.BotSlots.Players.Count(Team.Blue);
+//                    currMatchLog.player_count[Team.Red] += wrapper.BotSlots.Players.Count(Team.Red);
 //
 //                    int BlueJoins = wrapper.Players.joins.Count(Team.Blue);
 //                    int BlueLeaves = wrapper.Players.leaves.Count(Team.Blue);
@@ -53,7 +53,7 @@
 //                    currMatchLog.leaves += BlueLeaves + RedLeaves;
 //
 //
-//                    foreach (int slot in wrapper.Slots.Players.Slots(Team.Blue))
+//                    foreach (int slot in wrapper.BotSlots.Players.BotSlots(Team.Blue))
 //                    {
 //                        Hero? hero_or_null = cg.PlayerInfo.GetHero(slot);
 //                        if (hero_or_null != null)
@@ -62,7 +62,7 @@
 //                            currMatchLog.hero_play_time[Team.Blue][hero]++;
 //                        }
 //                    }
-//                    foreach (int slot in wrapper.Slots.Players.Slots(Team.Red))
+//                    foreach (int slot in wrapper.BotSlots.Players.BotSlots(Team.Red))
 //                    {
 //                        Hero? hero_or_null = cg.PlayerInfo.GetHero(slot);
 //                        if (hero_or_null != null)

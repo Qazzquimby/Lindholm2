@@ -110,7 +110,7 @@
             Get player count of red team and blue team.
             </summary>
         </member>
-        <member name="P:Deltin.CustomGameAutomation.CustomGame.PlayerSlots">
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.PlayerBotSlots">
             <summary>
             Gets the slots filled in red team and blue team.
             </summary>
@@ -120,7 +120,7 @@
             Gets the player count of blue team.
             </summary>
         </member>
-        <member name="P:Deltin.CustomGameAutomation.CustomGame.BlueSlots">
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.BlueBotSlots">
             <summary>
             Gets the slots filled in blue team.
             </summary>
@@ -130,7 +130,7 @@
             Gets the player count of red team.
             </summary>
         </member>
-        <member name="P:Deltin.CustomGameAutomation.CustomGame.RedSlots">
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.RedBotSlots">
             <summary>
             Gets the slots filled in red team.
             </summary>
@@ -140,7 +140,7 @@
             Gets the number of players in the queue.
             </summary>
         </member>
-        <member name="P:Deltin.CustomGameAutomation.CustomGame.QueueSlots">
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.QueueBotSlots">
             <summary>
             Gets the slots filled in the queue.
             </summary>
@@ -150,7 +150,7 @@
             Gets the number of players in spectator.
             </summary>
         </member>
-        <member name="P:Deltin.CustomGameAutomation.CustomGame.SpectatorSlots">
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.SpectatorBotSlots">
             <summary>
             Gets the slots filled in spectator excluding the first slot.
             </summary>
@@ -161,7 +161,7 @@
             </summary>
             <returns>Number of players who are not ingame.</returns>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.CustomGame.GetInvitedSlots">
+        <member name="M:Deltin.CustomGameAutomation.CustomGame.GetInvitedBotSlots">
             <summary>
             Gets a list of players who were invited but are not ingame.
             </summary>
@@ -172,7 +172,7 @@
             Gets the total amount of players in the custom game server.
             </summary>
         </member>
-        <member name="P:Deltin.CustomGameAutomation.CustomGame.TotalPlayerSlots">
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.TotalPlayerBotSlots">
             <summary>
             Gets all the slots of every player in the custom game server. Does not include players in queue.
             </summary>
@@ -212,7 +212,7 @@
             <param name="slot">Slot to check</param>
             <returns></returns>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.CustomGame.GetSlots(Deltin.CustomGameAutomation.SlotFlags)">
+        <member name="M:Deltin.CustomGameAutomation.CustomGame.GetBotSlots(Deltin.CustomGameAutomation.SlotFlags)">
             <summary>
             Gets slots in the game.
             </summary>
@@ -223,17 +223,17 @@
             <code>
             CustomGame cg = new CustomGame();
             
-            List&lt;int&gt; bluePlayerSlots = cg.GetSlots(SlotFlags.Blue | SlotFlags.NoAI);
+            List&lt;int&gt; bluePlayerBotSlots = cg.GetBotSlots(SlotFlags.Blue | SlotFlags.NoAI);
             
-            Console.WriteLine(string.Join(", ", bluePlayerSlots));
+            Console.WriteLine(string.Join(", ", bluePlayerBotSlots));
             </code>
             The code below will write all AI queueing for red to the console.
             <code>
             CustomGame cg = new CustomGame();
             
-            List&lt;int&gt; redQueueAISlots = cg.GetSlots(SlotFlags.NoPlayers | SlotFlags.RedQueue);
+            List&lt;int&gt; redQueueAIBotSlots = cg.GetBotSlots(SlotFlags.NoPlayers | SlotFlags.RedQueue);
             
-            Console.WriteLine(string.Join(", ", redQueueAISlots));
+            Console.WriteLine(string.Join(", ", redQueueAIBotSlots));
             </code>
             </example>
             <seealso cref="T:Deltin.CustomGameAutomation.SlotFlags"/>
@@ -494,7 +494,7 @@
                         // Make torbjorn only allowed to use his hammer.
                         new SetHero(
                             Hero.Torbjorn, // Torbjorn
-                            BotTeam.Both, // On both teams
+                            BotTeam.BotRuleBothTeams, // On both teams
                             new string[] { "weapons_enabled" },
                             new object[] { 2 } // 0 = All, 1 = Rivet gun only, 2 = Forge hammer only.
                         )
@@ -558,7 +558,7 @@
               if (dif &lt; 0) // Red has more players  
               {
                   // Remove extra AI from red
-                  int[] redAI = cg.AI.GetAISlots().Where(aiSlot =&gt; cg.IsSlotRed(aiSlot)).ToArray();
+                  int[] redAI = cg.AI.GetAIBotSlots().Where(aiSlot =&gt; cg.IsSlotRed(aiSlot)).ToArray();
                   for (int i = 0; i &lt; redAI.Length &amp;&amp; i &lt; -dif; i++)
                       if (cg.AI.RemoveFromGameIfAI(redAI[i]))
                           dif++;
@@ -569,7 +569,7 @@
               else if (dif &gt; 0) // Blue has more players
               {
                   // Remove extra AI from blue
-                  int[] blueAI = cg.AI.GetAISlots().Where(aiSlot =&gt; cg.IsSlotBlue(aiSlot)).ToArray();
+                  int[] blueAI = cg.AI.GetAIBotSlots().Where(aiSlot =&gt; cg.IsSlotBlue(aiSlot)).ToArray();
                   for (int i = 0; i &lt; blueAI.Length &amp;&amp; i &lt; dif; i++)
                       if (cg.AI.RemoveFromGameIfAI(blueAI[i]))
                           dif--;
@@ -629,13 +629,13 @@
             <exception cref="T:Deltin.CustomGameAutomation.InvalidSlotException">Thrown if <paramref name="slot" /> is not a valid slot.</exception>
             <seealso cref="M:Deltin.CustomGameAutomation.AI.IsAI(System.Int32,System.Boolean)" />
         </member>
-        <member name="M:Deltin.CustomGameAutomation.AI.GetAISlots(System.Boolean)">
+        <member name="M:Deltin.CustomGameAutomation.AI.GetAIBotSlots(System.Boolean)">
             <summary>
             Gets all slots that are AI.
             </summary>
             <returns>All AI slots.</returns>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.AI.GetPlayerSlots(System.Boolean)">
+        <member name="M:Deltin.CustomGameAutomation.AI.GetPlayerBotSlots(System.Boolean)">
             <summary>
             Gets all slots that are not AI.
             </summary>
@@ -1054,7 +1054,7 @@
 
           private static Player[] GetPlayers(CustomGame cg)
           {
-              List&lt;int&gt; slotsToGet = cg.GetSlots(SlotFlags.BlueTeam | SlotFlags.RedTeam | SlotFlags.Spectators | SlotFlags.NoAI);
+              List&lt;int&gt; slotsToGet = cg.GetBotSlots(SlotFlags.BlueTeam | SlotFlags.RedTeam | SlotFlags.Spectators | SlotFlags.NoAI);
               List&lt;Player&gt; players = new List&lt;Player&gt;();
 
               for (int i = 0; i &lt; slotsToGet.Count; i++)
@@ -1657,7 +1657,7 @@
             <summary>
             Flags for obtaining slots.
             </summary>
-            <seealso cref="M:Deltin.CustomGameAutomation.CustomGame.GetSlots(Deltin.CustomGameAutomation.SlotFlags)"/>
+            <seealso cref="M:Deltin.CustomGameAutomation.CustomGame.GetBotSlots(Deltin.CustomGameAutomation.SlotFlags)"/>
         </member>
         <member name="F:Deltin.CustomGameAutomation.SlotFlags.BlueTeam">
             <summary>

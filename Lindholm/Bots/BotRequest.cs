@@ -2,7 +2,7 @@
 
 namespace Lindholm.Bots
 {
-    internal class BotRequest : IEquatable<BotRequest>
+    public class BotRequest : IEquatable<BotRequest>
     {
         public Team BotTeam;
         public AiHero Hero;
@@ -23,7 +23,8 @@ namespace Lindholm.Bots
             }
             if (minPlayersOnTeam > maxPlayersOnTeam)
             {
-                throw (new ArgumentOutOfRangeException(nameof(minPlayersOnTeam), "Must not be greater than maxPlayers"));
+                throw (new ArgumentOutOfRangeException(nameof(minPlayersOnTeam),
+                    "Must not be greater than maxPlayers"));
             }
 
             BotTeam = team;

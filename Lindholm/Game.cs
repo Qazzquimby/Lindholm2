@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Lindholm.Bots;
+using Lindholm.Chat;
 using Lindholm.Phases;
 using Lindholm.Slots;
 
@@ -12,28 +13,26 @@ namespace Lindholm
     {
         public LindholmRuntime Runtime;
 
-        private Deltin.CustomGameAutomation.CustomGame _cG;
+        private readonly GameLoop _loop;
 
-        private GameLoop Loop;
-
-        public Chat.IChatManager Chat;
+        public IChatManager Chat;
         internal PhaseManager Phases;
 //        internal MatchManager Match;
 //        internal MapChooser Maps;
 
-        public BotManager Bots;
+        public IBotManager Bots;
         //internal PlayerManager Players;
 
 
 //        internal MatchLogger Logger;
-        internal SlotsManager Slots;
-        internal JoinManager Joins;
+        internal ISlotManager Slots;
+//        internal JoinManager Joins;
 
         public int ServerDuration {
             get; internal set;
         } = 0;
 
-        public CustomGame CG { get => _cG; set => _cG = value; }
+        public CustomGame Cg { get; set; }
 
         private List<Action> StartFuncs = new List<Action>();
         private bool blueNameSet;
@@ -42,16 +41,17 @@ namespace Lindholm
         public Game()
         {
             IGameBuilder builder = new GameBuilder();
-            CG = builder.CustomGameBuilder();
+            Cg = builder.CustomGameBuilder();
 
             Phases = builder.PhaseManagerBuilder();
-            Loop = builder.LoopBuilder(Phases);
+            _loop = builder.LoopBuilder(Phases);
 
-            Chat = builder.ChatBuilder(CG.Chat);
+            Chat = builder.ChatBuilder(Cg.Chat);
 
+            //ISlotContentHistory slotContentHistory = builder.SlotContentHistoryBuilder();           
             Slots = builder.SlotBuilder();
 
-            Bots = builder.BotBuilder(Slots);
+            Bots = builder.BotBuilder(Cg.AI, Slots);
             //Players = new PlayerManager(this);
 
             //Match = new MatchManager(this);
@@ -69,40 +69,39 @@ namespace Lindholm
 
         public void SetGameName(string name)
         {
-            CG.Settings.SetGameName(name);
+            Cg.Settings.SetGameName(name);
         }
 
         public void SetBlueName(string name)
         {
             blueNameSet = true;
-            CG.Settings.SetTeamName(PlayerTeam.Blue, @"\ " + name);
+            Cg.Settings.SetTeamName(PlayerTeam.Blue, @"\ " + name);
         }
 
         public void SetRedName(string name)
         {
             redNameSet = true;
-            CG.Settings.SetTeamName(PlayerTeam.Red, "* " + name);
+            Cg.Settings.SetTeamName(PlayerTeam.Red, "* " + name);
         }
 
         public void SetPreset(int preset, int numPresets)
         {
-            //cg.Settings.SetNumPresets(numPresets); //fixme readd if deltin doesn't mind
+            //cg.Settings.SetNumPresets(numPresets); //fixme re-add if deltin doesn't mind
             SetPreset(preset);
         }
 
         public void SetPreset(int preset)
         {
-            CG.Settings.LoadPreset(preset);
+            Cg.Settings.LoadPreset(preset);
         }
 
 
         public void Start()
         {
             Dev.Log("Starting");
-            FixNames();
+            //FixNames();
             PerformStartFunctions();
-            Loop.Start();
-            Joins.Start();
+            _loop.Start();
         }
 
         public void AddStartFunc(Action func)
@@ -125,9 +124,9 @@ namespace Lindholm
 
         public void Start_EnterGame()
         {
-            if (CG.GetGameState() == GameState.InLobby)
+            if (Cg.GetGameState() == GameState.InLobby)
             {
-                CG.StartGame();
+                Cg.StartGame();
             }
         }
 
@@ -143,7 +142,7 @@ namespace Lindholm
             GC.SuppressFinalize(this); //todolater param may be wrong
             if (all)
             {
-                CG.Dispose();
+                Cg.Dispose();
             }
         }
 
@@ -152,40 +151,21 @@ namespace Lindholm
             ServerDuration++;
         }
 
-        private void FixNames()
-        {
-            if (!blueNameSet)
-            {
-                SetBlueName("Blue Team");
-            }
-
-            if (!redNameSet)
-            {
-                SetRedName("Red Team");
-            }
-
-        }
+//        private void FixNames()
+//        {
+//            if (!blueNameSet)
+//            {
+//                SetBlueName("Blue Team");
+//            }
+//
+//            if (!redNameSet)
+//            {
+//                SetRedName("Red Team");
+//            }
+//
+//        }
 
 
 
     }
-
-    interface ILindholmComponent
-    {
-        void Start();
-    }
-
-    //todosoon destroy this. It's bad.
-    public abstract class WrapperComponent
-    {
-        protected Game wrapper;
-        protected CustomGame cg;
-
-        public WrapperComponent(Game wrapperInject)
-        {
-            wrapper = wrapperInject;
-            cg = wrapper.CG;
-        }
-    }
-
 }

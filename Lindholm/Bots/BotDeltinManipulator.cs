@@ -1,25 +1,25 @@
 ﻿namespace Lindholm.Bots
 {
-    internal class BotDeltinManipulator
+    internal class BotDeltinManipulator : IBotDeltinManipulator
     {
         private readonly Deltin.CustomGameAutomation.AI _ai;
 
-        private BotDeltinManipulator(Deltin.CustomGameAutomation.AI ai)
+        public BotDeltinManipulator(Deltin.CustomGameAutomation.AI ai)
         {
             _ai = ai;
         }
 
-        internal void AddAi(AiHero hero, Difficulty difficulty, Team team)
+        public void AddAi(AiHero hero, Difficulty difficulty, Team team)
         {
             _ai.AddAI(hero.ToDeltin(), difficulty.ToDeltin(), team.ToBotTeam());
         }
 
-        internal void RemoveBots()
+        public void RemoveBots()
         {
             _ai.RemoveAllBotsAuto();
         }
 
-        internal bool RemoveBot(int slot)
+        public bool RemoveBot(int slot)
         {
             return _ai.RemoveFromGameIfAI(slot);
         }

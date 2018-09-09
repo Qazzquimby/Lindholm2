@@ -11,8 +11,8 @@ namespace Lindholm.Phases
 
         private readonly List<Action> _entryFunctions = new List<Action>();
         private readonly List<Action> _exitFunctions = new List<Action>();
-        private Dictionary<int, List<Action>> DelayFunctions { get; set; } = new Dictionary<int, List<Action>>() { };
-        private Dictionary<int, List<Action>> LoopFunctions { get; set; } = new Dictionary<int, List<Action>>() { };
+        private Dictionary<int, List<Action>> DelayFunctions { get; } = new Dictionary<int, List<Action>>();
+        private Dictionary<int, List<Action>> LoopFunctions { get; } = new Dictionary<int, List<Action>>();
 
         public Phase(string name)
         {
@@ -59,12 +59,12 @@ namespace Lindholm.Phases
             }
         }
 
-        public void PerformEntry()
+        internal void PerformEntry()
         {
-            PerformAllFuncs(_entryFunctions);
+            PerformAllFunctions(_entryFunctions);
         }
 
-        public void PerformDelay()
+        private void PerformDelay()
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Lindholm.Phases
                     if (_timer == delay)
                     {
                         List<Action> funcs = DelayFunctions[delay];
-                        PerformAllFuncs(funcs);
+                        PerformAllFunctions(funcs);
                         DelayFunctions.Remove(delay);
                     }
                 }
@@ -81,18 +81,16 @@ namespace Lindholm.Phases
             catch (InvalidOperationException) { } //may be the wrong exception.
         }
 
-        public void PerformLoop()
+        internal void PerformLoop()
         {
             try
             {
-
-
                 foreach (int delay in LoopFunctions.Keys)
                 {
                     if (_timer % delay == 0)
                     {
-                        List<Action> funcs = LoopFunctions[delay];
-                        PerformAllFuncs(funcs);
+                        List<Action> functions = LoopFunctions[delay];
+                        PerformAllFunctions(functions);
                     }
                 }
                 PerformDelay();
@@ -101,14 +99,14 @@ namespace Lindholm.Phases
             catch (InvalidOperationException) { }
         }
 
-        public void PerformExit()
+        internal void PerformExit()
         {
-            PerformAllFuncs(_exitFunctions);
+            PerformAllFunctions(_exitFunctions);
         }
 
-        public void PerformAllFuncs(List<Action> funcs)
+        public void PerformAllFunctions(List<Action> functions)
         {
-            foreach (Action func in funcs)
+            foreach (Action func in functions)
             {
                 func();
             }

@@ -4,13 +4,13 @@ namespace Lindholm.Bots
 {
     public interface IBotRule
     {
-        bool FollowsRule(Team team, SlotsManager slots);
+        bool FollowsRule(Team team, ISlotManager slots);
     }
 
 
     public class BotRuleSmallerTeam : IBotRule
     {
-        public bool FollowsRule(Team team, SlotsManager slots)
+        bool IBotRule.FollowsRule(Team team, ISlotManager slots)
         {
             return slots.Players.TeamHasFewer(team);
         }
@@ -18,23 +18,23 @@ namespace Lindholm.Bots
 
     public class BotRuleEqualTeams : IBotRule
     {
-        public bool FollowsRule(Team team, SlotsManager slots)
+        bool IBotRule.FollowsRule(Team team, ISlotManager slots)
         {
             return slots.Players.TeamsHaveEqualCount;
         }
     }
 
-    public class Larger : IBotRule
+    public class BotRuleLargerTeam : IBotRule
     {
-        public bool FollowsRule(Team team, SlotsManager slots)
+        bool IBotRule.FollowsRule(Team team, ISlotManager slots)
         {
             return slots.Players.TeamHasMore(team);
         }
     }
 
-    public class Both : IBotRule
+    public class BotRuleBothTeams : IBotRule
     {
-        public bool FollowsRule(Team team, SlotsManager slots)
+        bool IBotRule.FollowsRule(Team team, ISlotManager slots)
         {
             return true;
         }

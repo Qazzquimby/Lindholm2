@@ -2,9 +2,13 @@
 
 namespace Lindholm.Bots
 {
-    public class BotRequester
+    public class BotRequester : IBotRequester
     {
-        internal List<BotRequest> BotRequests { get; private set; } = new List<BotRequest>();
+        public List<BotRequest> BotRequests { get; private set; } = new List<BotRequest>();
+        private readonly int _defaultMinPlayersOnTeam = 0;
+        private readonly int _defaultMaxPlayersOnTeam = 5;
+
+        internal BotRequester() { }
 
         public void RequestBot(AiHero hero, Difficulty difficulty, IBotRule rule)
         {
@@ -14,7 +18,7 @@ namespace Lindholm.Bots
 
         public void RequestBot(Team team, AiHero hero, Difficulty difficulty, IBotRule rule)
         {
-            RequestBot(team, hero, difficulty, rule, 0, 5);
+            RequestBot(team, hero, difficulty, rule, _defaultMinPlayersOnTeam, _defaultMaxPlayersOnTeam);
         }
 
         public void RequestBot(AiHero hero, Difficulty difficulty, IBotRule rule, int minPlayersOnTeam,

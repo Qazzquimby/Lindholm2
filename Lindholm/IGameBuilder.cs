@@ -6,13 +6,13 @@ using Lindholm.Slots;
 
 namespace Lindholm
 {
-    interface IGameBuilder
+    internal interface IGameBuilder
     {
-        ChatManagerManager ChatBuilder(Deltin.CustomGameAutomation.Chat deltinChat);
-        CustomGame CustomGameBuilder();
-        GameLoop LoopBuilder(PhaseManager phaseManager);
+        Deltin.CustomGameAutomation.CustomGame CustomGameBuilder();
         PhaseManager PhaseManagerBuilder();
-        SlotsManager SlotBuilder();
-        BotManager BotBuilder(SlotsManager slots);
+        GameLoop LoopBuilder(PhaseManager phaseManager);
+        IChatManager ChatBuilder(Deltin.CustomGameAutomation.Chat deltinChat);
+        ISlotManager SlotBuilder();
+        IBotManager BotBuilder(Deltin.CustomGameAutomation.AI ai, ISlotManager slots);
     }
 }

@@ -7,8 +7,8 @@
     <ProjectGuid>{D008DCBD-7F9F-4C95-B1EF-5CA7908E43FB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UnrealAmplifiedBotTests</RootNamespace>
-    <AssemblyName>UnrealAmplifiedBotTests</AssemblyName>
+    <RootNamespace>LindholmTests</RootNamespace>
+    <AssemblyName>LindholmTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -57,17 +57,25 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Bots\BotRequesterTests.cs" />
+    <Compile Include="Bots\BotRequestFulfillmentManagerTests.cs" />
+    <Compile Include="Bots\BotRequestTests.cs" />
+    <Compile Include="Chat\ChatChannelSwapperTests.cs" />
+    <Compile Include="Phases\PhaseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Slots\SlotContentHistoryTests.cs" />
+    <Compile Include="Slots\SlotConstantsTests.cs" />
+    <Compile Include="Slots\SlotTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UnrealAmplifiedBot\Lindholm.csproj">
+    <ProjectReference Include="..\Lindholm\Lindholm.csproj">
       <Project>{E47E092F-1AFE-486A-BA32-5749F40B2CF4}</Project>
       <Name>Lindholm</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

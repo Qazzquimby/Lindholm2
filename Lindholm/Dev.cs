@@ -1,7 +1,6 @@
 ﻿namespace Lindholm
 {
-
-    static class Dev
+    internal static class Dev
     {
         //public static bool PRINT_TO_CONSOLE = true;
 

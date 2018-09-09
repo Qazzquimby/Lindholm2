@@ -75,7 +75,7 @@
     <Compile Include="Bots\BotDeltinManipulator.cs" />
     <Compile Include="Bots\BotDeltinReader.cs" />
     <Compile Include="Bots\BotExpectations.cs" />
-    <Compile Include="Bots\BotFulfillment.cs" />
+    <Compile Include="Bots\BotRequestFulfillmentManager.cs" />
     <Compile Include="Bots\BotManipulation.cs" />
     <Compile Include="Bots\BotRequester.cs" />
     <Compile Include="Bots\BotRules.cs" />
@@ -91,12 +91,19 @@
     </Compile>
     <Compile Include="Bots\BotManager.cs" />
     <Compile Include="Bots\BotRequest.cs" />
+    <Compile Include="Bots\IBotDeltinManipulator.cs" />
+    <Compile Include="Bots\IBotDeltinReader.cs" />
+    <Compile Include="Bots\IBotExpectations.cs" />
+    <Compile Include="Bots\IBotManager.cs" />
+    <Compile Include="Bots\IBotManipulation.cs" />
+    <Compile Include="Bots\IBotRequester.cs" />
+    <Compile Include="Bots\IBotRequestFulfillmentManager.cs" />
     <Compile Include="Chat\Channel.cs">
       <DependentUpon>Channel.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Chat\ChatManagerManager.cs" />
+    <Compile Include="Chat\ChatManager.cs" />
     <Compile Include="Chat\ChatChannelSwapper.cs" />
     <Compile Include="Chat\ChatDecorator.cs" />
     <Compile Include="Chat\ChatDeltinChannelSwapper.cs" />
@@ -112,6 +119,9 @@
     <Compile Include="LindholmRuntime.cs" />
     <Compile Include="Phases\Phase.cs" />
     <Compile Include="Slots\BaseSlots.cs" />
+    <Compile Include="Slots\IBotSlotManager.cs" />
+    <Compile Include="Slots\ISlotManager.cs" />
+    <Compile Include="Slots\SlotConstants.cs" />
     <Compile Include="Slots\SlotContentHistory.cs" />
     <Compile Include="Slots\SlotTypes.cs" />
     <Compile Include="Time.cs" />
@@ -124,12 +134,13 @@
     <Compile Include="MatchLogging.cs" />
     <Compile Include="Phases\PhaseManager.cs" />
     <Compile Include="Players.cs" />
-    <Compile Include="Slots\SlotsManager.cs" />
+    <Compile Include="Slots\SlotManager.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

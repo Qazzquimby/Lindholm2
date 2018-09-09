@@ -5,44 +5,35 @@ namespace Lindholm.Slots
 {
     public abstract class BaseSlots
     {
-        private readonly SlotContentHistory _history;
+        private readonly ISlotContentHistory _history;
 
-        internal BaseSlots(SlotContentHistory history)
+        internal BaseSlots(ISlotContentHistory history)
         {
             _history = history;
         }
 
+        public bool TeamsHaveEqualCount => Count(Team.Blue) == Count(Team.Red);
+
         internal abstract bool SlotContentIsInCategory(SlotContent content);
 
-        private List<int> BlueSlots => GetSlotsForTeam(Team.Blue);
-
-        private List<int> RedSlots => GetSlotsForTeam(Team.Red);
-
-        private List<int> GetSlotsForTeam(Team team)
+        public List<int> Slots(Team team)
         {
             List<int> slots = new List<int>();
             foreach (int slot in SlotConstants.AllSlots(team))
             {
-                if (SlotContentIsInCategory(_history.Current(team)[slot]))
+                SlotContent currentSlotContent = _history.Current(slot);
+                if (SlotContentIsInCategory(currentSlotContent))
                 {
-                    slots.Append(slot);
+                    slots.Add(slot);
                 }
             }
-            return slots;
+
+            return slots; 
         }
 
         public List<int> Slots()
         {
             return Slots(Team.Blue).Union(Slots(Team.Red)).ToList();
-        }
-
-        public List<int> Slots(Team team)
-        {
-            if (team == Team.Blue)
-            {
-                return BlueSlots;
-            }
-            return RedSlots;
         }
 
         public int Count()
@@ -61,10 +52,8 @@ namespace Lindholm.Slots
             {
                 return Count(Team.Blue) > Count(Team.Red);
             }
-            else
-            {
-                return Count(Team.Red) > Count(Team.Blue);
-            }
+
+            return Count(Team.Red) > Count(Team.Blue);
         }
 
         public bool TeamHasFewer(Team team)
@@ -73,10 +62,8 @@ namespace Lindholm.Slots
             {
                 return Count(Team.Blue) < Count(Team.Red);
             }
-            else
-            {
-                return Count(Team.Red) < Count(Team.Blue);
-            }
+
+            return Count(Team.Red) < Count(Team.Blue);
         }
 
         public Team TeamWithMoreOrEqual()
@@ -85,12 +72,8 @@ namespace Lindholm.Slots
             {
                 return Team.Blue;
             }
-            else
-            {
-                return Team.Red;
-            }
-        }
 
-        public bool TeamsHaveEqualCount => Count(Team.Blue) == Count(Team.Red);
+            return Team.Red;
+        }
     }
 }

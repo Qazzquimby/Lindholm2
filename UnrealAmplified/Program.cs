@@ -63,7 +63,7 @@ namespace UnrealAmplified
 //            newSetUpPhase.AddEntry(Game.Players.scrambler.ScrambleTeams);
 //            newSetUpPhase.AddEntry(SetGameNotEnding);
 //
-//            newSetUpPhase.AddLoop(Game.Slots.UpdateAllSlotsHistory, 50);
+//            newSetUpPhase.AddLoop(Game.BotSlots.UpdateAllSlotsHistory, 50);
 //            newSetUpPhase.AddLoop(Game.Players.balancer.SwapToBalance, 50);
 //            newSetUpPhase.AddLoop(Game.Bots.HandleBots, 50);
 //
@@ -77,7 +77,7 @@ namespace UnrealAmplified
 //            Phase newGamePhase = new Phase("GAME");
 //            newGamePhase.AddEntry(EnsureMatchChat);
 //
-//            newGamePhase.AddLoop(Game.Slots.UpdateAllSlotsHistory, 50);
+//            newGamePhase.AddLoop(Game.BotSlots.UpdateAllSlotsHistory, 50);
 //            newGamePhase.AddLoop(Game.Players.UpdatePlayers, TimeConstants.StandardDelay);
 //            newGamePhase.AddLoop(Game.Players.HandleJoinsAndLeaves, TimeConstants.StandardDelay);
 //

@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UnrealAmplifiedBot\Lindholm.csproj">
+    <ProjectReference Include="..\Lindholm\Lindholm.csproj">
       <Project>{e47e092f-1afe-486a-ba32-5749f40b2cf4}</Project>
       <Name>Lindholm</Name>
     </ProjectReference>

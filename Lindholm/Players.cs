@@ -2,7 +2,7 @@
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
-//using Lindholm.Slots;
+//using Lindholm.BotSlots;
 //using UnrealAmplified;
 //
 //namespace Lindholm
@@ -48,12 +48,12 @@
 //
 //        public PlayerManager(Game wrapperInject) : base(wrapperInject)
 //        {
-//            joins = new JoinSlots(wrapper.Slots, _joinSlots);
-//            leaves = new LeaveSlots(wrapper.Slots, _leaveSlots);
+//            joins = new JoinSlots(wrapper.BotSlots, _joinSlots);
+//            leaves = new LeaveSlots(wrapper.BotSlots, _leaveSlots);
 //            InitPlayerCount();
 //            scrambler = new Scrambler(this);
 //            balancer = new AutoBalancer(this);
-//            wrapper.Slots.Players = new PlayerSlots(this);
+//            wrapper.BotSlots.Players = new PlayerSlots(this);
 //        }
 //
 //
@@ -63,7 +63,7 @@
 //        public class JoinSlots : BaseSlots
 //        {
 //            private Dictionary<Team, List<int>> _joinSlots;
-//            public JoinSlots(Slots.SlotsManager slotManager, Dictionary<Team, List<int>> leaveSlots) : base()
+//            public JoinSlots(BotSlots.SlotManager slotManager, Dictionary<Team, List<int>> leaveSlots) : base()
 //            {
 //                _joinSlots = leaveSlots;
 //            }
@@ -92,7 +92,7 @@
 //        public class LeaveSlots : BaseSlots
 //        {
 //            private Dictionary<Team, List<int>> _leaveSlots;
-//            public LeaveSlots(Slots.SlotsManager slotManager, Dictionary<Team, List<int>> leaveSlots) : base()
+//            public LeaveSlots(BotSlots.SlotManager slotManager, Dictionary<Team, List<int>> leaveSlots) : base()
 //            {
 //                _leaveSlots = leaveSlots;
 //            }
@@ -158,7 +158,7 @@
 //
 //        public int GetTeamSizeAdvantage(Team team)
 //        {
-//            return wrapper.Slots.Players.Count(team) - wrapper.Slots.Players.Count(team.Other());
+//            return wrapper.BotSlots.Players.Count(team) - wrapper.BotSlots.Players.Count(team.Other());
 //        }
 //
 //        private void InitPlayerCount()
@@ -170,11 +170,11 @@
 //
 //        private void InitPlayerCount(Team team)
 //        {
-//            List<int> Slots = wrapper.Slots.Filled.Slots(team);
+//            List<int> BotSlots = wrapper.BotSlots.Filled.BotSlots(team);
 //            int Count = 0;
-//            for (int i = 0; i < Slots.Count; i++)
+//            for (int i = 0; i < BotSlots.Count; i++)
 //            {
-//                if (!cg.AI.IsAI(Slots[i]))
+//                if (!cg.AI.IsAI(BotSlots[i]))
 //                {
 //                    Count++;
 //                }
@@ -204,7 +204,7 @@
 //            }
 //
 //            _joinSlots[team] = NewSlots.Except(OldSlots).ToList();
-//            foreach (int slot in joins.Slots(team))
+//            foreach (int slot in joins.BotSlots(team))
 //            {
 //                Dev.Log(string.Format("{0} join {1}", team.ToString(), slot));
 //            }
@@ -220,13 +220,13 @@
 //
 //        private List<int> GetNewPlayerSlots(Team team)
 //        {
-//            List<int> Slots = wrapper.Slots.Filled.Slots(team);
-//            return GetNewPlayerSlots(Slots);
+//            List<int> BotSlots = wrapper.BotSlots.Filled.BotSlots(team);
+//            return GetNewPlayerSlots(BotSlots);
 //        }
 //
 //        private List<int> GetNewPlayerSlots(List<int> slots)
 //        {
-//            List<int> BotSlots = wrapper.Slots.Bots.Slots();
+//            List<int> BotSlots = wrapper.BotSlots.Bots.BotSlots();
 //
 //            List<int> PlayerSlots = slots.Except(BotSlots).ToList();
 //            return PlayerSlots;
@@ -258,7 +258,7 @@
 //            if (PlayerCountHistory[Team.Blue].Count > 10) //Buffer to avoid swaps when starting up
 //            {
 //                Team largerTeam;
-//                if (wrapper.Slots.TeamHasMorePlayers(Team.Blue))
+//                if (wrapper.BotSlots.TeamHasMorePlayers(Team.Blue))
 //                {
 //                    largerTeam = Team.Blue;
 //                }
@@ -267,14 +267,14 @@
 //                    largerTeam = Team.Red;
 //                }
 //
-//                foreach (int joinSlot in joins.Slots(largerTeam))
+//                foreach (int joinSlot in joins.BotSlots(largerTeam))
 //                {
-//                    if (wrapper.Slots.Players.Count(largerTeam) >= wrapper.Slots.Players.Count(largerTeam.Other()) + 2)
+//                    if (wrapper.BotSlots.Players.Count(largerTeam) >= wrapper.BotSlots.Players.Count(largerTeam.Other()) + 2)
 //                    {
 //                        Dev.Log(string.Format("{0} much larger. Swapping new join from slot {1}", largerTeam.ToString(), joinSlot));
 //                        ForcePlayerSwap(joinSlot);
 //                    }
-//                    else if (wrapper.Slots.Players.Count(largerTeam) == wrapper.Slots.Players.Count(largerTeam.Other()) + 1
+//                    else if (wrapper.BotSlots.Players.Count(largerTeam) == wrapper.BotSlots.Players.Count(largerTeam.Other()) + 1
 //                        && SizeOverTime[Team.Blue] > SizeOverTime[Team.Red])
 //                    {
 //                        Dev.Log(string.Format("{0} larger longer. Swapping new join from slot {1}", largerTeam.ToString(), joinSlot));
@@ -286,14 +286,14 @@
 //
 //        private void ForcePlayerSwap(int slot)
 //        {
-//            Team slotTeam = wrapper.Slots.TeamWithSlot(slot);
+//            Team slotTeam = wrapper.BotSlots.TeamWithSlot(slot);
 //            Team newTeam = slotTeam.Other();
 //
-//            List<int> empties = wrapper.Slots.Empty.Slots(newTeam);
+//            List<int> empties = wrapper.BotSlots.Empty.BotSlots(newTeam);
 //
 //            if (empties.Count == 0)
 //            {
-//                if (wrapper.Slots.Players.Count(newTeam) == 6)
+//                if (wrapper.BotSlots.Players.Count(newTeam) == 6)
 //                {
 //                    Dev.Log(string.Format("Trying to swap from {0} to full team, cancelling.", slot));
 //                    return;
@@ -329,7 +329,7 @@
 //
 //            public void ScrambleTeams()
 //            {
-//                if (players.wrapper.Slots.Players.Count() > 0)
+//                if (players.wrapper.BotSlots.Players.Count() > 0)
 //                {
 //                    //players.wrapper.Chat.Print("Scrambling teams.");
 //
@@ -364,7 +364,7 @@
 //
 //            private List<int> GetSlotsToSwap(Team team)
 //            {
-//                List<int> PlayerSlotsCopy = new List<int>(players.wrapper.Slots.Players.Slots(team));
+//                List<int> PlayerSlotsCopy = new List<int>(players.wrapper.BotSlots.Players.BotSlots(team));
 //                PlayerSlotsCopy.OrderBy(x => rnd.Next()).ToList();
 //                int NumToSwap = (PlayerSlotsCopy.Count + 1) / 2;
 //                List<int> SlotsToSwap = new List<int>(PlayerSlotsCopy.GetRange(0, NumToSwap));
@@ -467,10 +467,10 @@
 //
 //            private void SwapDeadPlayer()
 //            {
-//                Team largerTeam = players.wrapper.Slots.TeamWithMoreOrEqualPlayers();
+//                Team largerTeam = players.wrapper.BotSlots.TeamWithMoreOrEqualPlayers();
 //
-//                List<int> slots = players.wrapper.Slots.Players.Slots(largerTeam);
-//                List<int> empties = players.wrapper.Slots.Empty.Slots(largerTeam.Other());
+//                List<int> slots = players.wrapper.BotSlots.Players.BotSlots(largerTeam);
+//                List<int> empties = players.wrapper.BotSlots.Empty.BotSlots(largerTeam.Other());
 //
 //                List<int> dead = players.wrapper.CG.PlayerInfo.PlayersDead();
 //                foreach (int dead_slot in dead)
@@ -493,9 +493,9 @@
 //                if (Math.Abs(blueSizeAdvantage) >= 2)
 //                {
 //                    List<int> playerSlots;
-//                    Team largerTeam = players.wrapper.Slots.TeamWithMoreOrEqualPlayers();
+//                    Team largerTeam = players.wrapper.BotSlots.TeamWithMoreOrEqualPlayers();
 //                    Dev.Log(string.Format("Swapping player from {0} to balance", largerTeam.ToString()));
-//                    playerSlots = players.wrapper.Slots.Players.Slots(largerTeam);
+//                    playerSlots = players.wrapper.BotSlots.Players.BotSlots(largerTeam);
 //                    int randomPlayer = playerSlots[rnd.Next(playerSlots.Count)];
 //                    players.ForcePlayerSwap(randomPlayer);
 //                }

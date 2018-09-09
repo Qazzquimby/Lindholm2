@@ -2,11 +2,11 @@
 {
     internal class ChatChannelSwapper : IChatChannelSwapper
     {
-        private readonly ChatDeltinChannelSwapper _deltinSwapper;
+        private readonly IChatDeltinChannelSwapper _deltinSwapper;
         private Channel? _currentChannel;
         private Channel? _previousChannel;
 
-        public ChatChannelSwapper(ChatDeltinChannelSwapper deltinSwapper)
+        public ChatChannelSwapper(IChatDeltinChannelSwapper deltinSwapper)
         {
             _currentChannel = null;
             _previousChannel = null;
@@ -15,23 +15,31 @@
 
         public void SwapChannel(Channel? channel)
         {
-            if (channel != null)
+            if (channel == null)
             {
-                var nonNullChannel = channel.Value;
-                _previousChannel = _currentChannel;
-                _currentChannel = channel;
-                _deltinSwapper.SwapChannel(nonNullChannel);
+                return;
             }
+
+            var nonNullChannel = channel.Value;
+            _previousChannel = _currentChannel;
+            _currentChannel = channel;
+            _deltinSwapper.SwapChannel(nonNullChannel);
         }
 
         public void SwapChannelIfDifferent(Channel channel)
         {
-            if (_currentChannel != channel) SwapChannel(channel);
+            if (_currentChannel != channel)
+            {
+                SwapChannel(channel);
+            }
         }
 
         public void SwapBack()
         {
-            if (_previousChannel != null) SwapChannel(_previousChannel);
+            if (_previousChannel != null)
+            {
+                SwapChannel(_previousChannel);
+            }
         }
     }
 }

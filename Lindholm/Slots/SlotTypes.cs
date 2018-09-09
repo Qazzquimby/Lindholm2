@@ -2,7 +2,9 @@
 {
     public class AllSlots : BaseSlots
     {
-        internal AllSlots(SlotContentHistory history) : base(history) { }
+        internal AllSlots(ISlotContentHistory history) : base(history)
+        {
+        }
 
         internal override bool SlotContentIsInCategory(SlotContent content)
         {
@@ -12,7 +14,9 @@
 
     public class FilledSlots : BaseSlots
     {
-        internal FilledSlots(SlotContentHistory history) : base(history) { }
+        internal FilledSlots(ISlotContentHistory history) : base(history)
+        {
+        }
 
         internal override bool SlotContentIsInCategory(SlotContent content)
         {
@@ -22,7 +26,9 @@
 
     public class EmptySlots : BaseSlots
     {
-        internal EmptySlots(SlotContentHistory history) : base(history) { }
+        internal EmptySlots(ISlotContentHistory history) : base(history)
+        {
+        }
 
         internal override bool SlotContentIsInCategory(SlotContent content)
         {
@@ -32,7 +38,9 @@
 
     public class PlayerSlots : BaseSlots
     {
-        internal PlayerSlots(SlotContentHistory history) : base(history) { }
+        internal PlayerSlots(ISlotContentHistory history) : base(history)
+        {
+        }
 
         internal override bool SlotContentIsInCategory(SlotContent content)
         {
@@ -42,7 +50,9 @@
 
     public class BotSlots : BaseSlots
     {
-        internal BotSlots(SlotContentHistory history) : base(history) { }
+        internal BotSlots(ISlotContentHistory history) : base(history)
+        {
+        }
 
         internal override bool SlotContentIsInCategory(SlotContent content)
         {

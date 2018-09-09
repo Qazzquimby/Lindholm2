@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Lindholm.Slots
@@ -10,28 +11,52 @@ namespace Lindholm.Slots
         Bot
     }
 
-    internal class SlotContentHistory
+
+    internal interface ISlotContentHistory
     {
-        private Dictionary<Team, List<List<SlotContent>>> _history = new Dictionary<Team, List<List<SlotContent>>>()
-        {
-            {Team.Blue, new List<List<SlotContent>>()},
-            {Team.Red, new List<List<SlotContent>>()}
-        };
+        SlotContent Current(int slot);
+        List<SlotContent> History(int slot);
+        void Update(List<SlotContent> slots);
+        void PurgeHistory();
+    }
 
-        internal List<SlotContent> Current(Team team)
+    internal class SlotContentHistory : ISlotContentHistory
+    {
+        private readonly int _numTrackedSlots = 12;
+        private Dictionary<int, List<SlotContent>> _history;
+        
+        internal SlotContentHistory()
         {
-            return _history[team][-1];
+            PurgeHistory();
         }
 
-        internal List<List<SlotContent>> History(Team team)
+        public SlotContent Current(int slot)
         {
-            return _history[team];
+            return _history[slot][_history[slot].Count-1];
+        }
+        
+        public List<SlotContent> History(int slot)
+        {
+            return _history[slot];
         }
 
-        internal void Update(List<SlotContent> blueSlots, List<SlotContent> redSlots)
+        public void Update(List<SlotContent> slots)
         {
-            _history[Team.Blue].Append(blueSlots);
-            _history[Team.Red].Append(redSlots);
+
+            Debug.Assert(slots.Count == _numTrackedSlots, $"{nameof(slots)} must be of size {_numTrackedSlots}.");
+            for (int i = 0; i < _numTrackedSlots; i++)
+            {
+                _history[i].Add(slots[i]);
+            }
+        }
+
+        public void PurgeHistory()
+        {
+            _history = new Dictionary<int, List<SlotContent>>();
+            for (int i = 0; i < _numTrackedSlots; i++)
+            {
+                _history[i] = new List<SlotContent>();
+            }
         }
     }
 }
