@@ -72,6 +72,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bots\BotCorruption.cs" />
     <Compile Include="Bots\BotDeltinManipulator.cs" />
     <Compile Include="Bots\BotDeltinReader.cs" />
     <Compile Include="Bots\BotExpectations.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Bots\BotManipulation.cs" />
     <Compile Include="Bots\BotRequester.cs" />
     <Compile Include="Bots\BotRules.cs" />
+    <Compile Include="Bots\BotsModifiedFlag.cs" />
     <Compile Include="Bots\Difficulty.cs">
       <DependentUpon>Difficulty.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -91,6 +93,7 @@
     </Compile>
     <Compile Include="Bots\BotManager.cs" />
     <Compile Include="Bots\BotRequest.cs" />
+    <Compile Include="Bots\IBotCorruption.cs" />
     <Compile Include="Bots\IBotDeltinManipulator.cs" />
     <Compile Include="Bots\IBotDeltinReader.cs" />
     <Compile Include="Bots\IBotExpectations.cs" />
@@ -116,16 +119,16 @@
     <Compile Include="IGameBuilder.cs" />
     <Compile Include="GameBuilder.cs" />
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="LindholmRuntime.cs" />
     <Compile Include="Phases\Phase.cs" />
     <Compile Include="Slots\BaseSlots.cs" />
     <Compile Include="Slots\IBotSlotManager.cs" />
     <Compile Include="Slots\ISlotManager.cs" />
     <Compile Include="Slots\SlotConstants.cs" />
     <Compile Include="Slots\SlotContentHistory.cs" />
+    <Compile Include="Slots\SlotContentObserver.cs" />
     <Compile Include="Slots\SlotTypes.cs" />
     <Compile Include="Time.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="Teams.cs" />
     <Compile Include="Dev.cs" />
     <Compile Include="Loop\Loop.cs" />
     <Compile Include="Joins.cs" />

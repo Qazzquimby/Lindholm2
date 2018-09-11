@@ -1,8 +1,5 @@
-﻿  
-  
-// ReSharper disable UnusedMember.Global
+﻿// ReSharper disable UnusedMember.Global
 using System;
-using Deltin.CustomGameAutomation;
 
 namespace Lindholm.Bots{
 	public enum Difficulty {

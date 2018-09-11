@@ -3,10 +3,9 @@
     public interface ISlotManager
     {
         AllSlots All { get; }
-        IBotSlotManager BotSlotManager { get; }
+        BotSlots Bots { get; }
         EmptySlots Empty { get; }
         FilledSlots Filled { get; }
         PlayerSlots Players { get; }
-        void Update();
     }
 }

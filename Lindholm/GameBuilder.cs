@@ -1,5 +1,6 @@
 ﻿using Lindholm.Bots;
 using Lindholm.Chat;
+using Lindholm.Loop;
 using Lindholm.Phases;
 using Lindholm.Slots;
 
@@ -34,17 +35,12 @@ namespace Lindholm
             IChatManager chat = new ChatManager(chatChannelSwapper, chatDecorator, deltinPrinter);
             return chat;
         }
-
-        public ISlotContentHistory SlotContentHistoryBuilder()
-        {
-            return new SlotContentHistory();
-        }
         
         public ISlotManager SlotBuilder()
         {
-            SlotContentHistory history = new SlotContentHistory();
-            BotSlotManager botSlots = new BotSlotManager(history);
-            SlotManager slots = new SlotManager(history, botSlots);
+            SlotContentObserver observer = new SlotContentObserver();
+            ISlotContentHistory history = new SlotContentHistory(observer);
+            ISlotManager slots = new SlotManager(history);
             return slots;
         }
 
@@ -53,12 +49,14 @@ namespace Lindholm
             IBotRequester requester = new BotRequester();
 
             IBotExpectations expectations = new BotExpectations(requester, slots);
-
             IBotDeltinManipulator deltinManipulator = new BotDeltinManipulator(ai);
-            IBotManipulation manipulation = new BotManipulation(slots, deltinManipulator);
-            IBotRequestFulfillmentManager botRequestFulfillmentManager = new BotRequestFulfillmentManager(expectations, manipulation, slots.BotSlotManager);
+            BotsModifiedFlag modifiedFlag = new BotsModifiedFlag();
+            IBotManipulation manipulation = new BotManipulation(slots, deltinManipulator, modifiedFlag);
 
-            IBotManager bots = new BotManager(requester, expectations, botRequestFulfillmentManager);
+            IBotCorruption corruption = new BotCorruption(slots.Bots, expectations);
+            IBotRequestFulfillmentManager botRequestFulfillmentManager = new BotRequestFulfillmentManager(expectations, manipulation, corruption);
+
+            IBotManager bots = new BotManager(requester, botRequestFulfillmentManager);
             return bots;
         }
 

@@ -2,28 +2,31 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Lindholm.Phases;
-using UnrealAmplified;
 
-namespace Lindholm
+namespace Lindholm.Loop
 {
 
     internal class GameLoop
     {
-        private PhaseManager Phases;
-        private Stopwatch _stopwatch;
+        private readonly PhaseManager _phases;
+        private readonly Stopwatch _stopwatch;
+        public bool Running = true;
         public GameLoop(PhaseManager phases) {
-            Phases = phases;
+            _phases = phases;
             _stopwatch = new Stopwatch();
         }
 
-        private Dictionary<int, List<Action>> PhaselessLoopFuncs { get; set; } = new Dictionary<int, List<Action>>() { };
+        private Dictionary<int, List<Action>> PhaselessLoopFunctions
+        {
+            get; 
+        } = new Dictionary<int, List<Action>>();
 
         public void Start()
         {
-            while (true)
+            while (Running)
             {
                 _stopwatch.Start();
-                Phases.CurrentPhase.PerformLoop();
+                _phases.CurrentPhase.PerformLoop();
                 //wrapper.ServerDuration++; todosoon readd from server component
                 //wrapper.Match.matchDuration++; todosoon readd from match component
                 _stopwatch.Stop();
@@ -36,11 +39,11 @@ namespace Lindholm
         {
             try
             {
-                PhaselessLoopFuncs[delay].Add(func);
+                PhaselessLoopFunctions[delay].Add(func);
             }
             catch (KeyNotFoundException)
             {
-                PhaselessLoopFuncs[delay] = new List<Action>
+                PhaselessLoopFunctions[delay] = new List<Action>
                 {
                     func
                 };

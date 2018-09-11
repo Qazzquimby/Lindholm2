@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
-using Lindholm.Slots;
 
 namespace Lindholm.Bots
 {
     public class BotRequestFulfillmentManager : IBotRequestFulfillmentManager
     {
-        private readonly IBotSlotManager _botSlots;
         private readonly IBotExpectations _expectations;
         private readonly IBotManipulation _manipulation;
+        private readonly IBotCorruption _corruption;
 
-        internal BotRequestFulfillmentManager(IBotExpectations expectations, IBotManipulation manipulation,
-            IBotSlotManager botSlots)
+        internal BotRequestFulfillmentManager(IBotExpectations expectations, IBotManipulation manipulation, IBotCorruption corruption)
+
         {
             _expectations = expectations;
             _manipulation = manipulation;
-            _botSlots = botSlots;
+            _corruption = corruption;
         }
 
         public void FulfillBotExpectations()
@@ -46,7 +45,22 @@ namespace Lindholm.Bots
             _manipulation.AddBots(newRequestsNotPresentInOldRequests);
         }
 
-        private List<BotRequest> BotRequestSetSubtract(List<BotRequest> baseRequests,
+        private void LogChanges(Team team)
+        {
+            if (_expectations.Expectations[team].Count != _expectations.PreviousExpectations[team].Count)
+            {
+                Dev.Log(
+                    $"{team.ToString()} bots previously {_expectations.PreviousExpectations[team].Count}, now {_expectations.Expectations[team].Count}.");
+            }
+        }
+
+        private bool BotStateIsCorrupt(Team team)
+        {
+            return _corruption.IsCorrupt(team);
+        }
+
+        private List<BotRequest> BotRequestSetSubtract(
+            List<BotRequest> baseRequests,
             List<BotRequest> requestsToSubtract)
         {
             List<BotRequest> remainder = new List<BotRequest>(baseRequests);
@@ -73,21 +87,8 @@ namespace Lindholm.Bots
             _manipulation.AddBots(_expectations.Expectations[team]);
         }
 
-        private bool BotStateIsCorrupt(Team team)
-        {
-            int numExpectedBots = _expectations.PreviousExpectations[team].Count;
-            int numActualBots = _botSlots.BotSlots.Count(team);
+        
 
-            return numExpectedBots != numActualBots;
-        }
 
-        private void LogChanges(Team team)
-        {
-            if (_expectations.Expectations[team].Count != _expectations.PreviousExpectations[team].Count)
-            {
-                Dev.Log(
-                    $"{team.ToString()} bots previously {_expectations.PreviousExpectations[team].Count}, now {_expectations.Expectations[team].Count}.");
-            }
-        }
     }
 }

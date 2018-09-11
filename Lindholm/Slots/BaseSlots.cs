@@ -18,6 +18,7 @@ namespace Lindholm.Slots
 
         public List<int> Slots(Team team)
         {
+            _history.Update();
             List<int> slots = new List<int>();
             foreach (int slot in SlotConstants.AllSlots(team))
             {

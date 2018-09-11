@@ -1,19 +1,11 @@
 ﻿using Deltin.CustomGameAutomation;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Lindholm
 {
-    public partial class Game : IDisposable
+    public partial class Game
     {
-
-        private Collection<Team> teams = new Collection<Team>() { Team.Blue, Team.Red };
-
-        public Collection<Team> Teams { get => teams; }
+        public Collection<Team> Teams { get; } = new Collection<Team>() { Team.Blue, Team.Red };
     }
 
     public static class TeamExtension

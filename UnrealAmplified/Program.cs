@@ -4,7 +4,7 @@ using Lindholm.Phases;
 
 namespace UnrealAmplified
 {
-    internal class Program
+    public class Program
     {
         public static Game Game;
 
@@ -21,11 +21,10 @@ namespace UnrealAmplified
 
             SetBotRequests();
 
-//            SetupPhase = BuildSetupPhase();
+            SetupPhase = BuildSetupPhase();
+
 
             Game.Start();
-
-
         }
 
         private static void PrintWelcomeMessage()
@@ -33,7 +32,7 @@ namespace UnrealAmplified
             Game.Chat.Print("Beep Boop. Starting up.");
         }
 
-        static void SetBotRequests()
+        private static void SetBotRequests()
         {
             Game.Bots.BotRequester.RequestBot(AiHero.McCree,
                 Difficulty.Medium,
@@ -55,23 +54,23 @@ namespace UnrealAmplified
         }
 
 
-//        private static Phase BuildSetupPhase()
-//        {
-//            Phase newSetUpPhase = new Phase("SETUP");
+        private static Phase BuildSetupPhase()
+        {
+            Phase newSetUpPhase = new Phase("SETUP");
 //            newSetUpPhase.AddEntry(Game.Logger.EndMatchLog);
 //            newSetUpPhase.AddEntry(Game.Slots.PurgeAllSlotsHistory);
 //            newSetUpPhase.AddEntry(Game.Players.scrambler.ScrambleTeams);
 //            newSetUpPhase.AddEntry(SetGameNotEnding);
-//
+
 //            newSetUpPhase.AddLoop(Game.BotSlots.UpdateAllSlotsHistory, 50);
 //            newSetUpPhase.AddLoop(Game.Players.balancer.SwapToBalance, 50);
 //            newSetUpPhase.AddLoop(Game.Bots.HandleBots, 50);
-//
+
 //            newSetUpPhase.AddDelay(EndSetUpPhase, 250);
-//
-//            return newSetUpPhase;
-//        }
-//
+
+            return newSetUpPhase;
+        }
+
 //        private static Phase GamePhaseConstructor()
 //        {
 //            Phase newGamePhase = new Phase("GAME");

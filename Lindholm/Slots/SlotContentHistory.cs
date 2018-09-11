@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Lindholm.Slots
 {
@@ -16,7 +15,7 @@ namespace Lindholm.Slots
     {
         SlotContent Current(int slot);
         List<SlotContent> History(int slot);
-        void Update(List<SlotContent> slots);
+        void Update();
         void PurgeHistory();
     }
 
@@ -24,9 +23,11 @@ namespace Lindholm.Slots
     {
         private readonly int _numTrackedSlots = 12;
         private Dictionary<int, List<SlotContent>> _history;
+        private SlotContentObserver _observer;
         
-        internal SlotContentHistory()
+        internal SlotContentHistory(SlotContentObserver observer)
         {
+            _observer = observer;
             PurgeHistory();
         }
 
@@ -40,13 +41,13 @@ namespace Lindholm.Slots
             return _history[slot];
         }
 
-        public void Update(List<SlotContent> slots)
+        public void Update()
         {
-
-            Debug.Assert(slots.Count == _numTrackedSlots, $"{nameof(slots)} must be of size {_numTrackedSlots}.");
+            List<SlotContent> slotContentObservations = _observer.Observe();
+            Debug.Assert(slotContentObservations.Count == _numTrackedSlots, $"{nameof(slotContentObservations)} must be of size {_numTrackedSlots}.");
             for (int i = 0; i < _numTrackedSlots; i++)
             {
-                _history[i].Add(slots[i]);
+                _history[i].Add(slotContentObservations[i]);
             }
         }
 

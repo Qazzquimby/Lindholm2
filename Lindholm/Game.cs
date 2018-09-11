@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Lindholm.Bots;
 using Lindholm.Chat;
+using Lindholm.Loop;
 using Lindholm.Phases;
 using Lindholm.Slots;
 
@@ -11,8 +12,6 @@ namespace Lindholm
 
     public partial class Game : IDisposable
     {
-        public LindholmRuntime Runtime;
-
         private readonly GameLoop _loop;
 
         public IChatManager Chat;
@@ -34,9 +33,9 @@ namespace Lindholm
 
         public CustomGame Cg { get; set; }
 
-        private List<Action> StartFuncs = new List<Action>();
-        private bool blueNameSet;
-        private bool redNameSet;
+        private readonly List<Action> _startFunctions = new List<Action>();
+        private bool _blueNameSet;
+        private bool _redNameSet;
 
         public Game()
         {
@@ -64,7 +63,7 @@ namespace Lindholm
 
             //Joins = new JoinManager(this);
 
-            //Loop.AddPhaselessLoop(Tick_IncrementTime, 1);
+            //Loop.AddPhaselessLoop(IncrementTime, 1);
         }
 
         public void SetGameName(string name)
@@ -74,13 +73,13 @@ namespace Lindholm
 
         public void SetBlueName(string name)
         {
-            blueNameSet = true;
+            _blueNameSet = true;
             Cg.Settings.SetTeamName(PlayerTeam.Blue, @"\ " + name);
         }
 
         public void SetRedName(string name)
         {
-            redNameSet = true;
+            _redNameSet = true;
             Cg.Settings.SetTeamName(PlayerTeam.Red, "* " + name);
         }
 
@@ -106,12 +105,12 @@ namespace Lindholm
 
         public void AddStartFunc(Action func)
         {
-            StartFuncs.Add(func);
+            _startFunctions.Add(func);
         }
 
         private void PerformStartFunctions()
         {
-            foreach (Action func in StartFuncs)
+            foreach (Action func in _startFunctions)
             {
                 func();
             }
@@ -146,7 +145,7 @@ namespace Lindholm
             }
         }
 
-        private void Tick_IncrementTime()
+        private void IncrementTime()
         {
             ServerDuration++;
         }

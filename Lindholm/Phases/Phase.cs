@@ -5,7 +5,7 @@ namespace Lindholm.Phases
 {
     public class Phase
     {
-        public string Name { get; private set; }
+        public string Name { get; }
 
         private int _timer = 0;
 

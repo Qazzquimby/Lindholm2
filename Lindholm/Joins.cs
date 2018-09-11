@@ -1,7 +1,4 @@
-﻿using Deltin.CustomGameAutomation;
-using System;
-
-namespace Lindholm
+﻿namespace Lindholm
 {
 
 //    class JoinManager

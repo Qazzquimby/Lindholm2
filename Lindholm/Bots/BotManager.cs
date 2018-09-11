@@ -5,13 +5,11 @@ namespace Lindholm.Bots
     public class BotManager : IBotManager
     {
         public IBotRequester BotRequester { get; }
-        private IBotExpectations BotExpectations { get; }
         public IBotRequestFulfillmentManager BotRequestFulfillmentManager { get; }
 
-        internal BotManager(IBotRequester botRequester, IBotExpectations botExpectations, IBotRequestFulfillmentManager botRequestFulfillmentManager)
+        internal BotManager(IBotRequester botRequester, IBotRequestFulfillmentManager botRequestFulfillmentManager)
         {
             BotRequester = botRequester;
-            BotExpectations = botExpectations;
             BotRequestFulfillmentManager = botRequestFulfillmentManager;
         }
 
