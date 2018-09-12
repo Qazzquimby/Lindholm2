@@ -2,14 +2,14 @@
 
 namespace Lindholm.Bots
 {
-    internal class BotDeltinReader : IBotDeltinReader
+    internal class BotDeltinObservation : IBotDeltinObservation
     {
         private readonly Deltin.CustomGameAutomation.AI _ai;
 
-        public BotDeltinReader(Deltin.CustomGameAutomation.AI ai)
+        public BotDeltinObservation(Deltin.CustomGameAutomation.AI ai)
         {
             _ai = ai;
-        }
+        }       
 
         public bool SafeIsAi(int slot)
         {

@@ -11,7 +11,8 @@ namespace LindholmTests.Bots
         [TestMethod()]
         public void TestWhenNoTeamSpecifiedThenRequestAddedToBothTeams()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
             AiHero hero = AiHero.Reaper;
             Difficulty difficulty = Difficulty.Hard;
             IBotRule rule = new BotRuleBothTeams();
@@ -19,68 +20,73 @@ namespace LindholmTests.Bots
             sut.RequestBot(hero, difficulty, rule);
 
 
-            Assert.AreEqual(sut.BotRequests.Count, 2);
+            Assert.AreEqual(requests.Requests.Count, 2);
         }
 
         [TestMethod()]
         public void TestWhenNoTeamSpecifiedThenRequestAddedForDifferentTeams()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
             AiHero hero = AiHero.Reaper;
             Difficulty difficulty = Difficulty.Hard;
             IBotRule rule = new BotRuleBothTeams();
 
             sut.RequestBot(hero, difficulty, rule);
 
-            Assert.AreNotEqual(sut.BotRequests[0].BotTeam, sut.BotRequests[1].BotTeam);
+            Assert.AreNotEqual(requests.Requests[0].BotTeam, requests.Requests[1].BotTeam);
         }
 
         [TestMethod()]
         public void TestCorrectHeroInRequest()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
             AiHero hero = AiHero.Reaper;
             Difficulty difficulty = Difficulty.Hard;
             IBotRule rule = new BotRuleBothTeams();
 
             sut.RequestBot(hero, difficulty, rule);
 
-            Assert.AreEqual(sut.BotRequests[0].Hero, hero);
-            Assert.AreEqual(sut.BotRequests[1].Hero, hero);
+            Assert.AreEqual(requests.Requests[0].Hero, hero);
+            Assert.AreEqual(requests.Requests[1].Hero, hero);
         }
 
         [TestMethod()]
         public void TestCorrectDifficultyInRequest()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
             AiHero hero = AiHero.Reaper;
             Difficulty difficulty = Difficulty.Hard;
             IBotRule rule = new BotRuleBothTeams();
 
             sut.RequestBot(hero, difficulty, rule);
 
-            Assert.AreEqual(sut.BotRequests[0].Difficulty, difficulty);
-            Assert.AreEqual(sut.BotRequests[1].Difficulty, difficulty);
+            Assert.AreEqual(requests.Requests[0].Difficulty, difficulty);
+            Assert.AreEqual(requests.Requests[1].Difficulty, difficulty);
         }
 
         [TestMethod()]
         public void TestCorrectRuleInRequest()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
             AiHero hero = AiHero.Reaper;
             Difficulty difficulty = Difficulty.Hard;
             IBotRule rule = new BotRuleBothTeams();
 
             sut.RequestBot(hero, difficulty, rule);
 
-            Assert.AreEqual(sut.BotRequests[0].Rule, rule);
-            Assert.AreEqual(sut.BotRequests[1].Rule, rule);
+            Assert.AreEqual(requests.Requests[0].Rule, rule);
+            Assert.AreEqual(requests.Requests[1].Rule, rule);
         }
 
         [TestMethod()]
         public void TestClearBotRequestsLeavesNoBotRequests()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
 
 
             AiHero hero = AiHero.Sombra;
@@ -95,13 +101,14 @@ namespace LindholmTests.Bots
 
             sut.ClearBotRequests();
 
-            Assert.AreEqual(sut.BotRequests.Count, 0);
+            Assert.AreEqual(requests.Requests.Count, 0);
         }
 
         [TestMethod()]
         public void TestRequestHasCorrectTeam()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
 
 
             AiHero hero = AiHero.Sombra;
@@ -110,13 +117,14 @@ namespace LindholmTests.Bots
             Team team = Team.Blue;
             sut.RequestBot(team, hero, difficulty, rule);
 
-            Assert.AreEqual(sut.BotRequests[0].BotTeam, Team.Blue);
+            Assert.AreEqual(requests.Requests[0].BotTeam, Team.Blue);
         }
 
         [TestMethod()]
         public void TestMinAndMaxPlayersForRequest()
         {
-            BotRequester sut = new BotRequester();
+            BotRequests requests = new BotRequests();
+            BotRequester sut = new BotRequester(requests);
 
             AiHero hero = AiHero.Sombra;
             Difficulty difficulty = Difficulty.Hard;
@@ -126,8 +134,8 @@ namespace LindholmTests.Bots
             sut.RequestBot(hero, difficulty, rule, minPlayers, maxPlayers);
 
             
-            Assert.AreEqual(sut.BotRequests[0].MinPlayersOnTeam, minPlayers);
-            Assert.AreEqual(sut.BotRequests[0].MaxPlayersOnTeam, maxPlayers);
+            Assert.AreEqual(requests.Requests[0].MinPlayersOnTeam, minPlayers);
+            Assert.AreEqual(requests.Requests[0].MaxPlayersOnTeam, maxPlayers);
         }
     }
 }

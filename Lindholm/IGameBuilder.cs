@@ -1,4 +1,6 @@
-﻿using Lindholm.Bots;
+﻿using System;
+using System.Collections.Generic;
+using Lindholm.Bots;
 using Lindholm.Chat;
 using Lindholm.Loop;
 using Lindholm.Phases;
@@ -12,7 +14,7 @@ namespace Lindholm
         PhaseManager PhaseManagerBuilder();
         GameLoop LoopBuilder(PhaseManager phaseManager);
         IChatManager ChatBuilder(Deltin.CustomGameAutomation.Chat deltinChat);
-        ISlotManager SlotBuilder();
-        IBotManager BotBuilder(Deltin.CustomGameAutomation.AI ai, ISlotManager slots);
+        ISlotManager SlotBuilder(Deltin.CustomGameAutomation.AI ai, Func<List<int>> filledSlotsFunction, BotsModifiedFlag modifiedFlag);
+        IBotManager BotBuilder(Deltin.CustomGameAutomation.AI ai, ISlotManager slots, BotsModifiedFlag modifiedFlag);
     }
 }

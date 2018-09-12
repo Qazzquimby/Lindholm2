@@ -1,4 +1,6 @@
-﻿using Lindholm.Bots;
+﻿using System;
+using System.Collections.Generic;
+using Lindholm.Bots;
 using Lindholm.Chat;
 using Lindholm.Loop;
 using Lindholm.Phases;
@@ -35,22 +37,25 @@ namespace Lindholm
             IChatManager chat = new ChatManager(chatChannelSwapper, chatDecorator, deltinPrinter);
             return chat;
         }
-        
-        public ISlotManager SlotBuilder()
+
+        public ISlotManager SlotBuilder(Deltin.CustomGameAutomation.AI ai, Func<List<int>> filledSlotsFunction, BotsModifiedFlag modifiedFlag)
         {
-            SlotContentObserver observer = new SlotContentObserver();
+            BotDeltinObservation botDeltinObservation = new BotDeltinObservation(ai);
+            DeltinSlotObservation deltinSlotObservation = new DeltinSlotObservation(botDeltinObservation, filledSlotsFunction);
+            ISlotContentObserver observer = new SlotContentObserver(modifiedFlag, deltinSlotObservation);
             ISlotContentHistory history = new SlotContentHistory(observer);
             ISlotManager slots = new SlotManager(history);
             return slots;
         }
 
-        public IBotManager BotBuilder(Deltin.CustomGameAutomation.AI ai, ISlotManager slots)
+        public IBotManager BotBuilder(Deltin.CustomGameAutomation.AI ai, ISlotManager slots, BotsModifiedFlag modifiedFlag)
         {
-            IBotRequester requester = new BotRequester();
+            BotRequests requests = new BotRequests();
+            IBotRequester requester = new BotRequester(requests);
 
-            IBotExpectations expectations = new BotExpectations(requester, slots);
+            IBotExpectations expectations = new BotExpectations(requests, slots);
             IBotDeltinManipulator deltinManipulator = new BotDeltinManipulator(ai);
-            BotsModifiedFlag modifiedFlag = new BotsModifiedFlag();
+            
             IBotManipulation manipulation = new BotManipulation(slots, deltinManipulator, modifiedFlag);
 
             IBotCorruption corruption = new BotCorruption(slots.Bots, expectations);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lindholm;
 using Lindholm.Slots;
+using LindholmTests.Bots;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LindholmTests.Slots
@@ -22,7 +23,7 @@ namespace LindholmTests.Slots
                 throw new NotImplementedException();
             }
 
-            public void Update(List<SlotContent> slots)
+            public void Update()
             {
                 throw new NotImplementedException();
             }
@@ -87,7 +88,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestAllSlotsHoldsEverySlot()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            ISlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             AllSlots sut = new AllSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -100,7 +102,7 @@ namespace LindholmTests.Slots
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             List<int> blueResult = sut.Slots(Team.Blue);
             List<int> redResult = sut.Slots(Team.Red);
@@ -115,7 +117,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestPlayerSlots()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             PlayerSlots sut = new PlayerSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -127,8 +130,9 @@ namespace LindholmTests.Slots
             {
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
+            observer.SetObserve(blueSlots, redSlots);
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             List<int> blueResult = sut.Slots(Team.Blue);
             List<int> redResult = sut.Slots(Team.Red);
@@ -143,7 +147,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestWhenPlayerCountDifferentThenTeamsHaveEqualCountIsFalse()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             PlayerSlots sut = new PlayerSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -155,8 +160,9 @@ namespace LindholmTests.Slots
             {
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
+            observer.SetObserve(blueSlots, redSlots);
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             Assert.IsFalse(sut.TeamsHaveEqualCount);
         }
@@ -164,7 +170,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestWhenPlayerCountSameThenTeamsHaveEqualCountIsTrue()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             PlayerSlots sut = new PlayerSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -176,8 +183,9 @@ namespace LindholmTests.Slots
             {
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Bot, SlotContent.Empty
             };
+            observer.SetObserve(blueSlots, redSlots);
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             Assert.IsTrue(sut.TeamsHaveEqualCount);
         }
@@ -186,7 +194,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestWhenBlueHasFewerBotsThenBlueHasMoreBotsIsFalse()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             BotSlots sut = new BotSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -198,8 +207,9 @@ namespace LindholmTests.Slots
             {
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
+            observer.SetObserve(blueSlots, redSlots);
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             Assert.IsFalse(sut.TeamHasMore(Team.Blue));
         }
@@ -207,7 +217,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestWhenRedHasMoreBotsThenRedHasMoreBotsIsTrue()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             BotSlots sut = new BotSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -219,8 +230,9 @@ namespace LindholmTests.Slots
             {
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
+            observer.SetObserve(blueSlots, redSlots);
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             Assert.IsTrue(sut.TeamHasMore(Team.Red));
         }
@@ -228,7 +240,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestWhenBlueHasFewerBotsThenBlueHasFewerBotsIsTrue()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             BotSlots sut = new BotSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -241,7 +254,10 @@ namespace LindholmTests.Slots
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            observer.SetObserve(blueSlots, redSlots);
+
+
+            history.Update();
 
             Assert.IsTrue(sut.TeamHasFewer(Team.Blue));
         }
@@ -249,7 +265,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestWhenRedHasMoreBotsThenRedHasFewerBotsIsFalse()
         {
-            SlotContentHistory history = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory history = new SlotContentHistory(observer);
             BotSlots sut = new BotSlots(history);
 
             List<SlotContent> blueSlots = new List<SlotContent>()
@@ -261,8 +278,9 @@ namespace LindholmTests.Slots
             {
                 SlotContent.Bot, SlotContent.Bot, SlotContent.Bot, SlotContent.Player, SlotContent.Player, SlotContent.Empty
             };
+            observer.SetObserve(blueSlots, redSlots);
 
-            history.Update(blueSlots.Concat(redSlots).ToList());
+            history.Update();
 
             Assert.IsFalse(sut.TeamHasFewer(Team.Red));
         }

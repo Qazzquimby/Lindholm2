@@ -2,7 +2,7 @@
 
 namespace Lindholm.Bots
 {
-    internal interface IBotDeltinReader
+    internal interface IBotDeltinObservation
     {
         bool SafeIsAi(int slot);
         List<int> SafeGetBotSlots();

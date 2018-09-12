@@ -39,7 +39,7 @@ namespace Lindholm
 
         public Game()
         {
-            IGameBuilder builder = new GameBuilder();
+            GameBuilder builder = new GameBuilder();
             Cg = builder.CustomGameBuilder();
 
             Phases = builder.PhaseManagerBuilder();
@@ -48,9 +48,12 @@ namespace Lindholm
             Chat = builder.ChatBuilder(Cg.Chat);
 
             //ISlotContentHistory slotContentHistory = builder.SlotContentHistoryBuilder();           
-            Slots = builder.SlotBuilder();
 
-            Bots = builder.BotBuilder(Cg.AI, Slots);
+            
+            BotsModifiedFlag modifiedFlag = new BotsModifiedFlag();
+            Slots = builder.SlotBuilder(Cg.AI, FilledSlotsFunc, modifiedFlag);
+
+            Bots = builder.BotBuilder(Cg.AI, Slots, modifiedFlag);
             //Players = new PlayerManager(this);
 
             //Match = new MatchManager(this);
@@ -64,6 +67,11 @@ namespace Lindholm
             //Joins = new JoinManager(this);
 
             //Loop.AddPhaselessLoop(IncrementTime, 1);
+        }
+
+        private List<int> FilledSlotsFunc()
+        {
+            return Cg.PlayerSlots;
         }
 
         public void SetGameName(string name)

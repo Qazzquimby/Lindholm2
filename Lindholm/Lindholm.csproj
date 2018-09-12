@@ -74,7 +74,7 @@
   <ItemGroup>
     <Compile Include="Bots\BotCorruption.cs" />
     <Compile Include="Bots\BotDeltinManipulator.cs" />
-    <Compile Include="Bots\BotDeltinReader.cs" />
+    <Compile Include="Bots\BotDeltinObservation.cs" />
     <Compile Include="Bots\BotExpectations.cs" />
     <Compile Include="Bots\BotRequestFulfillmentManager.cs" />
     <Compile Include="Bots\BotManipulation.cs" />
@@ -95,7 +95,7 @@
     <Compile Include="Bots\BotRequest.cs" />
     <Compile Include="Bots\IBotCorruption.cs" />
     <Compile Include="Bots\IBotDeltinManipulator.cs" />
-    <Compile Include="Bots\IBotDeltinReader.cs" />
+    <Compile Include="Bots\IBotDeltinObservation.cs" />
     <Compile Include="Bots\IBotExpectations.cs" />
     <Compile Include="Bots\IBotManager.cs" />
     <Compile Include="Bots\IBotManipulation.cs" />
@@ -121,7 +121,9 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Phases\Phase.cs" />
     <Compile Include="Slots\BaseSlots.cs" />
+    <Compile Include="Slots\DeltinSlotObservation.cs" />
     <Compile Include="Slots\IBotSlotManager.cs" />
+    <Compile Include="Slots\ISlotContentObserver.cs" />
     <Compile Include="Slots\ISlotManager.cs" />
     <Compile Include="Slots\SlotConstants.cs" />
     <Compile Include="Slots\SlotContentHistory.cs" />

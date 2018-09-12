@@ -4,7 +4,6 @@ namespace Lindholm.Bots
 {
     public interface IBotRequester
     {
-        List<BotRequest> BotRequests { get; }
         void RequestBot(AiHero hero, Difficulty difficulty, IBotRule rule);
         void RequestBot(Team team, AiHero hero, Difficulty difficulty, IBotRule rule);
 

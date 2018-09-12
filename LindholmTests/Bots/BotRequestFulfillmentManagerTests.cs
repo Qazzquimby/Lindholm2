@@ -14,6 +14,7 @@ namespace LindholmTests.Bots
         {
             public int BlueCount;
             public int RedCount;
+            private FakeSlotContentObserver _observer = new FakeSlotContentObserver();
             public void SetUpFake(Dictionary<Team, List<BotRequest>> expectations)
             {
                 BlueCount = expectations[Team.Blue].Count;
@@ -49,6 +50,16 @@ namespace LindholmTests.Bots
             public List<SlotContent> History(int slot)
             {
                 throw new System.NotImplementedException();
+            }
+
+            public void Update()
+            {
+//                List<SlotContent> slotContentObservations = _observer.Observe();
+//                
+//                for (int i = 0; i < _numTrackedSlots; i++)
+//                {
+//                    _history[i].Add(slotContentObservations[i]);
+//                }
             }
 
             public void Update(List<SlotContent> slots)
@@ -173,8 +184,8 @@ namespace LindholmTests.Bots
 
             FakeBotManipulation fakeManipulation = new FakeBotManipulation();
 
-
-            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, fakeBotSlotManager);
+            BotCorruption botCorruption = new BotCorruption(fakedBotSlots, fakeExpectations);
+            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, botCorruption);
 
             sut.FulfillBotExpectations();
 
@@ -242,7 +253,9 @@ namespace LindholmTests.Bots
             FakeBotManipulation fakeManipulation = new FakeBotManipulation();
 
 
-            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, fakeBotSlotManager);
+            BotCorruption botCorruption = new BotCorruption(fakedBotSlots, fakeExpectations);
+            BotRequestFulfillmentManager sut =
+                new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, botCorruption);
 
             sut.FulfillBotExpectations();
 
@@ -311,7 +324,8 @@ namespace LindholmTests.Bots
             FakeBotManipulation fakeManipulation = new FakeBotManipulation();
 
 
-            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, fakeBotSlotManager);
+            BotCorruption botCorruption = new BotCorruption(fakedBotSlots, fakeExpectations);
+            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, botCorruption);
 
             sut.FulfillBotExpectations();
 
@@ -380,7 +394,8 @@ namespace LindholmTests.Bots
             FakeBotManipulation fakeManipulation = new FakeBotManipulation();
 
 
-            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, fakeBotSlotManager);
+            BotCorruption botCorruption = new BotCorruption(fakedBotSlots, fakeExpectations);
+            BotRequestFulfillmentManager sut = new BotRequestFulfillmentManager(fakeExpectations, fakeManipulation, botCorruption);
 
             sut.FulfillBotExpectations();
 

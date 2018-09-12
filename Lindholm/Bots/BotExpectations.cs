@@ -5,12 +5,12 @@ namespace Lindholm.Bots
 {
     internal class BotExpectations : IBotExpectations
     {
-        private readonly IBotRequester _botRequester;
+        private readonly BotRequests _botRequests;
         private readonly ISlotManager _slots;
 
-        internal BotExpectations(IBotRequester botRequester, ISlotManager slots)
+        internal BotExpectations(BotRequests botRequests, ISlotManager slots)
         {
-            _botRequester = botRequester;
+            _botRequests = botRequests;
             _slots = slots;
         }
 
@@ -40,7 +40,7 @@ namespace Lindholm.Bots
 
             Expectations[team] = new List<BotRequest>();
 
-            foreach (BotRequest request in _botRequester.BotRequests)
+            foreach (BotRequest request in _botRequests.Requests)
             {
                 AddRequestIfRelevant(request, team);
             }

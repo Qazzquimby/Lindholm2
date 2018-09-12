@@ -1,14 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Lindholm.Bots
 {
+    public class BotRequests 
+    {
+        internal List<BotRequest> Requests { get; set; } = new List<BotRequest>();
+    }
+
     public class BotRequester : IBotRequester
     {
-        public List<BotRequest> BotRequests { get; private set; } = new List<BotRequest>();
+        private BotRequests _botRequests;
         private readonly int _defaultMinPlayersOnTeam = 0;
         private readonly int _defaultMaxPlayersOnTeam = 5;
 
-        internal BotRequester() { }
+        internal BotRequester(BotRequests botRequests)
+        {
+            _botRequests = botRequests;
+        }
 
         public void RequestBot(AiHero hero, Difficulty difficulty, IBotRule rule)
         {
@@ -33,12 +42,12 @@ namespace Lindholm.Bots
             int maxPlayersOnTeam)
         {
             BotRequest newRequest = new BotRequest(team, hero, difficulty, rule, minPlayersOnTeam, maxPlayersOnTeam);
-            BotRequests.Add(newRequest);
+            _botRequests.Requests.Add(newRequest);
         }
 
         public void ClearBotRequests()
         {
-            BotRequests = new List<BotRequest>();
+            _botRequests.Requests = new List<BotRequest>();
         }
     }
 }

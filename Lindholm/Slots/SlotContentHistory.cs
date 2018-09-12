@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace Lindholm.Slots
 {
-    internal enum SlotContent
+    public enum SlotContent
     {
         Empty,
         Player,
@@ -23,9 +23,9 @@ namespace Lindholm.Slots
     {
         private readonly int _numTrackedSlots = 12;
         private Dictionary<int, List<SlotContent>> _history;
-        private SlotContentObserver _observer;
+        private readonly ISlotContentObserver _observer;
         
-        internal SlotContentHistory(SlotContentObserver observer)
+        internal SlotContentHistory(ISlotContentObserver observer)
         {
             _observer = observer;
             PurgeHistory();

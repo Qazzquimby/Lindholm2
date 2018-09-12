@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Lindholm;
+﻿using System.Collections.Generic;
 using Lindholm.Slots;
+using LindholmTests.Bots;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LindholmTests.Slots
@@ -14,7 +12,8 @@ namespace LindholmTests.Slots
         [TestMethod]
         public void TestSlotContentHistoryLengthEqualToNumUpdates()
         {
-            SlotContentHistory sut = new SlotContentHistory();
+            FakeSlotContentObserver observer = new FakeSlotContentObserver();
+            SlotContentHistory sut = new SlotContentHistory(observer);
             
             List<SlotContent> blueSlots = new List<SlotContent>()
             {
@@ -28,10 +27,10 @@ namespace LindholmTests.Slots
 
             Assert.AreEqual(sut.History(4).Count, 0);
 
-            sut.Update(blueSlots.Concat(redSlots).ToList());
+            sut.Update();
             Assert.AreEqual(sut.History(0).Count, 1);
 
-            sut.Update(blueSlots.Concat(redSlots).ToList());
+            sut.Update();
             Assert.AreEqual(sut.History(11).Count, 2);
 
         }

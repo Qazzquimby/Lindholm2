@@ -2,8 +2,6 @@
 {
     internal class SlotManager : ISlotManager
     {
-        private readonly ISlotContentHistory _history;
-        
         public BotSlots Bots { get; }
         public AllSlots All { get; }
         public EmptySlots Empty { get; }
@@ -12,12 +10,11 @@
 
         public SlotManager(ISlotContentHistory history)
         {
-            _history = history;
-            Bots = new BotSlots(_history);
-            All = new AllSlots(_history);
-            Filled = new FilledSlots(_history);
-            Empty = new EmptySlots(_history);
-            Players = new PlayerSlots(_history);
+            Bots = new BotSlots(history);
+            All = new AllSlots(history);
+            Filled = new FilledSlots(history);
+            Empty = new EmptySlots(history);
+            Players = new PlayerSlots(history);
         }
     }
 }

@@ -59,6 +59,7 @@
     <Compile Include="Bots\BotRequesterTests.cs" />
     <Compile Include="Bots\BotRequestFulfillmentManagerTests.cs" />
     <Compile Include="Bots\BotRequestTests.cs" />
+    <Compile Include="Bots\FakeSlotContentObserver.cs" />
     <Compile Include="Chat\ChatChannelSwapperTests.cs" />
     <Compile Include="Phases\PhaseTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
