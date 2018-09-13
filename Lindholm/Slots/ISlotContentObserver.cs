@@ -4,6 +4,6 @@ namespace Lindholm.Slots
 {
     interface ISlotContentObserver
     {
-        List<SlotContent> Observe();
+        List<SlotContent> Observe(Dictionary<int, List<SlotContent>> history);
     }
 }

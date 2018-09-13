@@ -4,14 +4,14 @@ using Lindholm.Bots;
 
 namespace Lindholm.Slots
 {
-    internal class DeltinSlotObservation
+    internal class DeltinSlotObservation : IDeltinSlotObservation
     {
-        private IBotDeltinObservation _botObservation;
-        public Func<List<int>> FilledSlotsFunction { get; }
+        public IBotDeltinObservation BotObservation { get; }
+        private Func<List<int>> FilledSlotsFunction { get; }
 
         public DeltinSlotObservation(IBotDeltinObservation botObservation, Func<List<int>> filledSlotsFunction)
         {
-            _botObservation = botObservation;
+            BotObservation = botObservation;
             FilledSlotsFunction = filledSlotsFunction;
         }
 

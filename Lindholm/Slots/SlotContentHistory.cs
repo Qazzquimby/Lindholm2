@@ -43,7 +43,7 @@ namespace Lindholm.Slots
 
         public void Update()
         {
-            List<SlotContent> slotContentObservations = _observer.Observe();
+            List<SlotContent> slotContentObservations = _observer.Observe(_history);
             Debug.Assert(slotContentObservations.Count == _numTrackedSlots, $"{nameof(slotContentObservations)} must be of size {_numTrackedSlots}.");
             for (int i = 0; i < _numTrackedSlots; i++)
             {

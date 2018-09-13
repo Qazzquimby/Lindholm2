@@ -123,6 +123,7 @@
     <Compile Include="Slots\BaseSlots.cs" />
     <Compile Include="Slots\DeltinSlotObservation.cs" />
     <Compile Include="Slots\IBotSlotManager.cs" />
+    <Compile Include="Slots\IDeltinSlotObservation.cs" />
     <Compile Include="Slots\ISlotContentObserver.cs" />
     <Compile Include="Slots\ISlotManager.cs" />
     <Compile Include="Slots\SlotConstants.cs" />
